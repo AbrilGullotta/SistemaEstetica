@@ -40,6 +40,8 @@ public class TurnoRepository {
             System.out.println("Error al guardar turno: " + e.getMessage());
         }
     }
+    
+    
     public ArrayList<Turno> listarTurnos() {
 
         ArrayList<Turno> turnos = new ArrayList<>();
@@ -91,5 +93,33 @@ public class TurnoRepository {
         }
 
         return turnos;
+    }
+  
+    
+    public boolean existeTurnoReservado(int idProfesional, String fecha, String hora) {
+
+        String sql = "SELECT id_turno FROM turno "
+                + "WHERE id_profesional = ? "
+                + "AND fecha = ? "
+                + "AND hora = ? "
+                + "AND estado = 'RESERVADO'";
+
+        try {
+            Connection conn = Conexion.conectar();
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, idProfesional);
+            ps.setString(2, fecha);
+            ps.setString(3, hora);
+
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next();
+
+        } catch (SQLException e) {
+            System.out.println("Error al validar turno: " + e.getMessage());
+        }
+
+        return false;
     }
 }

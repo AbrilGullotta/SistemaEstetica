@@ -10,9 +10,16 @@ public class TurnoService {
 
     public void registrarTurno(Turno turno) {
 
-        turnoRepository.guardarTurno(turno);
-    }
-    public ArrayList<Turno> listarTurnos() {
-        return turnoRepository.listarTurnos();
+        boolean ocupado = turnoRepository.existeTurnoReservado(
+                turno.getProfesional().getIdUsuario(),
+                turno.getFecha(),
+                turno.getHora()
+        );
+
+        if (ocupado) {
+            System.out.println("No se puede registrar el turno: el profesional ya tiene un turno reservado en ese horario.");
+        } else {
+            turnoRepository.guardarTurno(turno);
+        }
     }
 }

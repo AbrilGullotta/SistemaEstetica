@@ -1,27 +1,35 @@
 package test;
 
-import java.util.ArrayList;
-
+import modelo.Cliente;
+import modelo.Profesional;
+import modelo.Servicio;
 import modelo.Turno;
+import repository.TurnoRepository;
 import servicio.TurnoService;
 
 public class TurnoTest {
 
     public static void main(String[] args) {
 
-        TurnoService turnoService = new TurnoService();
+    	Cliente cliente = new Cliente();
+    	cliente.setIdUsuario(1);
 
-        ArrayList<Turno> turnos = turnoService.listarTurnos();
+    	Profesional profesional = new Profesional();
+    	profesional.setIdUsuario(1);
 
-        for (Turno turno : turnos) {
-            System.out.println("-------------------------");
-            System.out.println("Turno ID: " + turno.getIdTurno());
-            System.out.println("Cliente: " + turno.getCliente().getNombre() + " " + turno.getCliente().getApellido());
-            System.out.println("Profesional: " + turno.getProfesional().getNombre() + " " + turno.getProfesional().getApellido());
-            System.out.println("Servicio: " + turno.getServicio().getNombre());
-            System.out.println("Fecha: " + turno.getFecha());
-            System.out.println("Hora: " + turno.getHora());
-            System.out.println("Estado: " + turno.getEstado());
-        }
+    	Servicio servicio = new Servicio();
+    	servicio.setIdServicio(1);
+
+    	Turno turno = new Turno();
+    	turno.setCliente(cliente);
+    	turno.setProfesional(profesional);
+    	turno.setServicio(servicio);
+    	turno.setFecha("2026-05-18");
+    	turno.setHora("15:30:00");
+    	turno.setEstado("RESERVADO");
+
+    	TurnoService turnoService = new TurnoService();
+
+    	turnoService.registrarTurno(turno);
     }
 }
