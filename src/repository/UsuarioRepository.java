@@ -4,47 +4,51 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import util.Encriptador;
 import conexion.Conexion;
 import modelo.Usuario;
 import javax.swing.JOptionPane;
 
 public class UsuarioRepository {
 
-    public Usuario login(String email, String contrasenia) {
+	public Usuario login(String email, String contrasenia) {
 
-        String sql = "SELECT * FROM usuario WHERE email = ? AND contrasenia = ?";
+	    String sql = "SELECT * FROM usuario WHERE email = ?";
 
-        try {
+	    try {
 
-            Connection conn = Conexion.conectar();
+	        Connection conn = Conexion.conectar();
 
-            PreparedStatement ps = conn.prepareStatement(sql);
+	        PreparedStatement ps = conn.prepareStatement(sql);
 
-            ps.setString(1, email);
-            ps.setString(2, contrasenia);
+	        ps.setString(1, email);
 
-            ResultSet rs = ps.executeQuery();
+	        ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
+	        if (rs.next()) {
 
-                Usuario usuario = new Usuario();
+	            String hashGuardado = rs.getString("contrasenia");
 
-                usuario.setNombre(rs.getString("nombre"));
-                usuario.setApellido(rs.getString("apellido"));
-                usuario.setEmail(rs.getString("email"));
-                usuario.setContrasenia(rs.getString("contrasenia"));
-                usuario.setRol(rs.getString("rol"));
+	            if (Encriptador.verificar(contrasenia, hashGuardado)) {
 
-                return usuario;
-            }
+	                Usuario usuario = new Usuario();
 
-        } catch (SQLException e) {
-            System.out.println("Error login: " + e.getMessage());
-        }
+	                usuario.setNombre(rs.getString("nombre"));
+	                usuario.setApellido(rs.getString("apellido"));
+	                usuario.setEmail(rs.getString("email"));
+	                usuario.setContrasenia(hashGuardado);
+	                usuario.setRol(rs.getString("rol"));
 
-        return null;
-    }
+	                return usuario;
+	            }
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Error login: " + e.getMessage());
+	    }
+
+	    return null;
+	}
     
     public void registrarCliente(Usuario usuario) {
 
@@ -61,7 +65,7 @@ public class UsuarioRepository {
             ps.setString(3, usuario.getDni());
             ps.setString(4, usuario.getEmail());
             ps.setString(5, usuario.getTelefono());
-            ps.setString(6, usuario.getContrasenia());
+            ps.setString(6, Encriptador.hash(usuario.getContrasenia()));
             ps.setString(7, usuario.getFechaNacimiento());
             ps.setString(8, "CLIENTE");
 
