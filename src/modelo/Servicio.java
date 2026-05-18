@@ -1,14 +1,20 @@
 package modelo;
 
 public class Servicio {
-
+	private int idServicio;
     private String nombre;
     private double precio;
     private String duracion;
 
     public Servicio() {
     }
+    public int getIdServicio() {
+        return idServicio;
+    }
 
+    public void setIdServicio(int idServicio) {
+        this.idServicio = idServicio;
+    }
     public String getNombre() {
         return nombre;
     }
