@@ -116,4 +116,10 @@ public class TurnoService {
         boolean ok = turnoRepo.cambiarEstado(idTurno, nuevoEstado);
         return ok ? "OK" : "ERROR: No se pudo actualizar el estado.";
     }
+    
+    public String cancelarTurno(int idTurno) {
+        // Solo se puede cancelar si está reservado o cpnfirmado 
+    	
+        return turnoRepo.cambiarEstado(idTurno, "CANCELADO") ? "OK" : "ERROR: No se pudo cancelar el turno.";
+    }
 }
