@@ -9,6 +9,7 @@ import modelo.Usuario;
 import servicio.ServicioService;
 import servicio.TurnoService;
 import servicio.UsuarioService;
+import servicio.SeniaService;
 
 public class MenuCliente {
 
@@ -45,10 +46,9 @@ public class MenuCliente {
             case 2: consultarTurnos(); break;
             case 3: cancelarTurno(); break;
             case 4: verServicios(); break;
-            case 5: verProfesionales(); break;
-            case 6:
-                JOptionPane.showMessageDialog(null, "Pantalla de pago de seña");
-                break;
+            case 5: verProfesionales(); break; 
+            case 6: pagarSenia(); break;
+      
                 default:
                     JOptionPane.showMessageDialog(null, "Opción inválida");
             }
@@ -266,6 +266,66 @@ public class MenuCliente {
             String resultado = turnoService.cancelarTurno(turnoElegido.getIdTurno());
             if ("OK".equals(resultado)) {
                 JOptionPane.showMessageDialog(null, "Turno cancelado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, resultado);
+            }
+        }
+    }
+    
+    private void pagarSenia() {
+
+        // Mostrar solo turnos reservados
+        ArrayList<modelo.Turno> turnos = turnoService.listarTurnosPorCliente(
+                clienteLogueado.getIdUsuario()
+        );
+
+        ArrayList<modelo.Turno> reservados = new ArrayList<>();
+        for (modelo.Turno t : turnos) {
+            if (t.getEstado().equals("RESERVADO")) {
+                reservados.add(t);
+            }
+        }
+
+        if (reservados.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No tenés turnos RESERVADOS para señar.");
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder("¿A qué turno querés pagar la seña?\n\n");
+        for (int i = 0; i < reservados.size(); i++) {
+            modelo.Turno t = reservados.get(i);
+            sb.append((i + 1) + ". " + t.getFecha() + " " + t.getHora()
+                    + " | " + t.getServicio().getNombre()
+                    + " | $" + t.getServicio().getPrecio() + "\n");
+        }
+        sb.append("\nIngresá el número (0 para volver):");
+
+        int num = Integer.parseInt(JOptionPane.showInputDialog(sb.toString()));
+        if (num == 0 || num > reservados.size()) return;
+
+        modelo.Turno turnoElegido = reservados.get(num - 1);
+        SeniaService seniaService = new SeniaService();
+        double montoSenia = seniaService.calcularMonto(turnoElegido.getServicio().getPrecio());
+
+        int confirmar = JOptionPane.showConfirmDialog(null,
+                "Seña del 30% para el turno:\n"
+                + turnoElegido.getFecha() + " " + turnoElegido.getHora()
+                + " - " + turnoElegido.getServicio().getNombre() + "\n\n"
+                + "Monto a pagar: $" + String.format("%.2f", montoSenia) + "\n\n"
+                + "¿Confirmás el pago?",
+                "Pagar seña",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirmar == JOptionPane.YES_OPTION) {
+            String resultado = seniaService.registrarSenia(turnoElegido);
+
+            if (resultado.startsWith("OK")) {
+                double monto = Double.parseDouble(resultado.split(":")[1]);
+                JOptionPane.showMessageDialog(null,
+                        "¡Seña registrada!\n"
+                        + "Monto: $" + String.format("%.2f", monto) + "\n"
+                        + "El turno fue confirmado.");
             } else {
                 JOptionPane.showMessageDialog(null, resultado);
             }
