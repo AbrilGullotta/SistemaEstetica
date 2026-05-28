@@ -11,13 +11,14 @@ public class Usuario {
     protected String dni;
     protected String telefono;
     protected String fechaNacimiento;
+    protected String especialidad;
 
     public Usuario() {
     }
 
     public Usuario(int idUsuario, String nombre, String apellido,
             String email, String contrasenia, String rol,
-            String dni, String telefono, String fechaNacimiento) {
+            String dni, String telefono, String fechaNacimiento, String especialidad) {
 
  this.idUsuario = idUsuario;
  this.nombre = nombre;
@@ -28,6 +29,7 @@ public class Usuario {
  this.dni = dni;
  this.telefono = telefono;
  this.fechaNacimiento = fechaNacimiento;
+ this.especialidad= especialidad;
 }
 
     public int getIdUsuario() {
@@ -99,5 +101,12 @@ public class Usuario {
     public void setFechaNacimiento(String fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
         
+    }
+    public String getEspecialidad() {
+        return especialidad;
+    }
+
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
     }
 }

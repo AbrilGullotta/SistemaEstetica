@@ -1,25 +1,119 @@
 package servicio;
 
-import modelo.Turno;
-import repository.TurnoRepository;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+import modelo.Cliente;
+import modelo.Disponibilidad;
+import modelo.Profesional;
+import modelo.Servicio;
+import modelo.Turno;
+import repository.DisponibilidadRepository;
+import repository.TurnoRepository;
 
 public class TurnoService {
 
-    private TurnoRepository turnoRepository = new TurnoRepository();
+    private TurnoRepository turnoRepo = new TurnoRepository();
+    private DisponibilidadRepository dispRepo = new DisponibilidadRepository();
 
     public void registrarTurno(Turno turno) {
-
-        boolean ocupado = turnoRepository.existeTurnoReservado(
+        boolean ocupado = turnoRepo.existeTurnoReservado(
                 turno.getProfesional().getIdUsuario(),
                 turno.getFecha(),
                 turno.getHora()
         );
 
         if (ocupado) {
-            System.out.println("No se puede registrar el turno: el profesional ya tiene un turno reservado en ese horario.");
+            System.out.println("El profesional ya tiene un turno en ese horario.");
         } else {
-            turnoRepository.guardarTurno(turno);
+            turnoRepo.guardarTurno(turno);
         }
+    }
+
+    public ArrayList<Turno> listarTurnos() {
+        return turnoRepo.listarTurnos();
+    }
+
+    public ArrayList<Turno> listarTurnosPorCliente(int idCliente) {
+        return turnoRepo.listarTurnosPorCliente(idCliente);
+    }
+
+    public ArrayList<Turno> listarTurnosPorProfesional(int idProfesional) {
+        return turnoRepo.listarTurnosPorProfesional(idProfesional);
+    }
+
+   
+      //Genera los slots horarios disponibles para un profesional en un día,
+      //según la duración del servicio, descartando los ya reservados.
+    
+    public ArrayList<String> obtenerHorariosDisponibles(int idProfesional,
+                                                         String dia,
+                                                         String duracionServicio) {
+        ArrayList<String> horariosLibres = new ArrayList<>();
+
+        ArrayList<Disponibilidad> disponibilidades = dispRepo.listarPorProfesional(idProfesional);
+
+        // Duración del servicio en minutos (formato HH:MM:SS)
+        int duracionMinutos = parsearDuracion(duracionServicio);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+        for (Disponibilidad d : disponibilidades) {
+            if (!d.getDia().equals(dia)) continue;
+
+            LocalTime cursor  = LocalTime.parse(d.getHoraInicio(), fmt);
+            LocalTime horaFin = LocalTime.parse(d.getHoraFin(), fmt);
+
+            while (!cursor.plusMinutes(duracionMinutos).isAfter(horaFin)) {
+                String horaStr = cursor.format(fmt);
+
+                boolean ocupado = turnoRepo.existeTurnoReservado(idProfesional, dia, horaStr);
+                if (!ocupado) {
+                    horariosLibres.add(horaStr);
+                }
+
+                cursor = cursor.plusMinutes(duracionMinutos);
+            }
+        }
+
+        return horariosLibres;
+    }
+    
+     //Reserva un turno completo dado cliente, profesional, servicio, fecha y hora.
+    
+    public String reservarTurno(Cliente cliente, Profesional profesional,
+                                 Servicio servicio, String fecha, String hora) {
+
+        boolean ocupado = turnoRepo.existeTurnoReservado(
+                profesional.getIdUsuario(), fecha, hora
+        );
+
+        if (ocupado) {
+            return "ERROR: Ese horario ya fue reservado.";
+        }
+
+        Turno turno = new Turno();
+        turno.setCliente(cliente);
+        turno.setProfesional(profesional);
+        turno.setServicio(servicio);
+        turno.setFecha(fecha);
+        turno.setHora(hora);
+        turno.setEstado("RESERVADO");
+
+        boolean ok = turnoRepo.guardarTurno(turno);
+        return ok ? "OK" : "ERROR: No se pudo guardar el turno.";
+    }
+
+    private int parsearDuracion(String duracion) {
+       
+    	// Formato esperado: HH:MM:SS
+        String[] partes = duracion.split(":");
+        int horas   = Integer.parseInt(partes[0]);
+        int minutos = Integer.parseInt(partes[1]);
+        return horas * 60 + minutos;
+    }
+    public String cambiarEstado(int idTurno, String nuevoEstado) {
+        boolean ok = turnoRepo.cambiarEstado(idTurno, nuevoEstado);
+        return ok ? "OK" : "ERROR: No se pudo actualizar el estado.";
     }
 }
