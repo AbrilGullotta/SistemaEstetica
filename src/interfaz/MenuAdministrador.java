@@ -140,9 +140,61 @@ public class MenuAdministrador {
                     }
                 }
                 break;
-                case 5:
-                    JOptionPane.showMessageDialog(null, "Pantalla de registro de seña");
+             
+            case 5:
+                ArrayList<Turno> turnosReservados = turnoService.listarTurnos();
+                ArrayList<Turno> aptosSenia = new ArrayList<>();
+
+                for (Turno t : turnosReservados) {
+                    if (t.getEstado().equals("RESERVADO")) {
+                        aptosSenia.add(t);
+                    }
+                }
+
+                if (aptosSenia.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No hay turnos RESERVADOS para registrar seña.");
                     break;
+                }
+
+                StringBuilder sbSenia = new StringBuilder("Seleccioná el turno para registrar la seña:\n\n");
+                for (int i = 0; i < aptosSenia.size(); i++) {
+                    Turno t = aptosSenia.get(i);
+                    sbSenia.append((i + 1) + ". " + t.getFecha() + " " + t.getHora()
+                            + " | " + t.getCliente().getNombre() + " " + t.getCliente().getApellido()
+                            + " | " + t.getServicio().getNombre()
+                            + " | $" + t.getServicio().getPrecio() + "\n");
+                }
+                sbSenia.append("\nIngresá el número (0 para cancelar):");
+
+                int numSenia = Integer.parseInt(JOptionPane.showInputDialog(sbSenia.toString()));
+                if (numSenia == 0 || numSenia > aptosSenia.size()) break;
+
+                Turno turnoParaSenia = aptosSenia.get(numSenia - 1);
+                servicio.SeniaService seniaServiceAdmin = new servicio.SeniaService();
+                double montoAdmin = seniaServiceAdmin.calcularMonto(turnoParaSenia.getServicio().getPrecio());
+
+                int confirmaSenia = JOptionPane.showConfirmDialog(null,
+                        "Registrar seña para:\n"
+                        + turnoParaSenia.getCliente().getNombre() + " " + turnoParaSenia.getCliente().getApellido() + "\n"
+                        + turnoParaSenia.getFecha() + " " + turnoParaSenia.getHora()
+                        + " - " + turnoParaSenia.getServicio().getNombre() + "\n\n"
+                        + "Monto (30%): $" + String.format("%.2f", montoAdmin) + "\n\n"
+                        + "¿Confirmás el registro?",
+                        "Registrar seña",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirmaSenia == JOptionPane.YES_OPTION) {
+                    String resSenia = seniaServiceAdmin.registrarSenia(turnoParaSenia);
+                    if (resSenia.startsWith("OK")) {
+                        double monto = Double.parseDouble(resSenia.split(":")[1]);
+                        JOptionPane.showMessageDialog(null,
+                                "Seña registrada correctamente.\nMonto: $" + String.format("%.2f", monto));
+                    } else {
+                        JOptionPane.showMessageDialog(null, resSenia);
+                    }
+                }
+                break;
                 case 6:
                     UsuarioService usVer = new UsuarioService();
                     ArrayList<modelo.Cliente> clientes = usVer.listarClientes();

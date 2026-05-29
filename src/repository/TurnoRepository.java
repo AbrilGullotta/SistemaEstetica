@@ -151,9 +151,10 @@ public class TurnoRepository {
 
     public boolean existeTurnoReservado(int idProfesional, String fecha, String hora) {
 
-        String sql = "SELECT id_turno FROM turno "
-                + "WHERE id_profesional = ? AND fecha = ? AND hora = ? AND estado = 'RESERVADO'";
-
+    	String sql = "SELECT id_turno FROM turno "
+    		    + "WHERE id_profesional = ? AND fecha = ? AND hora = ? "
+    		    + "AND estado IN ('RESERVADO', 'CONFIRMADO')";
+    	
         try (Connection conn = Conexion.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
