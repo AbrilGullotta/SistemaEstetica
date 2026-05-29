@@ -37,4 +37,18 @@ public class ServicioService {
     public ArrayList<Servicio> listarServicios() {
         return repo.listar();
     }
+    
+ // Modificar servicios
+    public String modificarServicio(Servicio servicio) {
+
+        if (servicio.getNombre().trim().isEmpty()) {
+            return "ERROR: El nombre no puede estar vacío.";
+        }
+        if (servicio.getPrecio() <= 0) {
+            return "ERROR: El precio debe ser mayor a cero.";
+        }
+
+        boolean ok = repo.modificar(servicio);
+        return ok ? "OK" : "ERROR: No se pudo modificar el servicio.";
+    }
 }

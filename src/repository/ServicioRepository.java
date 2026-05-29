@@ -56,4 +56,25 @@ public class ServicioRepository {
 
         return lista;
     }
+    
+ // Modificar servicio 
+    public boolean modificar(Servicio servicio) {
+
+        String sql = "UPDATE servicio SET nombre=?, precio=?, duracion=? WHERE id_servicio=?";
+
+        try (Connection conn = Conexion.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, servicio.getNombre());
+            ps.setDouble(2, servicio.getPrecio());
+            ps.setString(3, servicio.getDuracion());
+            ps.setInt(4, servicio.getIdServicio());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al modificar servicio: " + e.getMessage());
+            return false;
+        }
+    }
 }

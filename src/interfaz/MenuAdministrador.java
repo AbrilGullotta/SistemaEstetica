@@ -30,6 +30,7 @@ public class MenuAdministrador {
                     + "10. Buscar cliente\n"
                     + "11. Modificar cliente\n"
                     + "12. Modificar turno\n"
+                    + "13. Modificar servicio\n"
                     + "0. Volver"
             ));
 
@@ -458,6 +459,62 @@ public class MenuAdministrador {
                         } else {
                             JOptionPane.showMessageDialog(null, resModifT);
                         }
+                    }
+                    break;
+                    
+                case 13:
+                    ServicioService ssModifServ = new ServicioService();
+                    ArrayList<modelo.Servicio> serviciosEdit = ssModifServ.listarServicios();
+
+                    if (serviciosEdit.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No hay servicios registrados.");
+                        break;
+                    }
+
+                    StringBuilder sbServEdit = new StringBuilder("Seleccioná el servicio a modificar:\n\n");
+                    for (int i = 0; i < serviciosEdit.size(); i++) {
+                        modelo.Servicio s = serviciosEdit.get(i);
+                        sbServEdit.append((i + 1) + ". " + s.getNombre()
+                                + " | $" + s.getPrecio()
+                                + " | " + s.getDuracion() + "\n");
+                    }
+                    sbServEdit.append("\nIngresá el número (0 para cancelar):");
+
+                    int numServEdit = Integer.parseInt(JOptionPane.showInputDialog(sbServEdit.toString()));
+                    if (numServEdit == 0 || numServEdit > serviciosEdit.size()) break;
+
+                    modelo.Servicio servicioAEditar = serviciosEdit.get(numServEdit - 1);
+
+                    String nuevoNombreServ = JOptionPane.showInputDialog(
+                            "Nombre:", servicioAEditar.getNombre());
+                    if (nuevoNombreServ == null) break;
+
+                    String nuevoPrecioStr = JOptionPane.showInputDialog(
+                            "Precio:", servicioAEditar.getPrecio());
+                    if (nuevoPrecioStr == null) break;
+
+                    String nuevaDuracion = JOptionPane.showInputDialog(
+                            "Duración (HH:MM:SS):", servicioAEditar.getDuracion());
+                    if (nuevaDuracion == null) break;
+
+                    double nuevoPrecio;
+                    try {
+                        nuevoPrecio = Double.parseDouble(nuevoPrecioStr.replace(",", "."));
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "ERROR: El precio debe ser un número válido.");
+                        break;
+                    }
+
+                    servicioAEditar.setNombre(nuevoNombreServ.trim());
+                    servicioAEditar.setPrecio(nuevoPrecio);
+                    servicioAEditar.setDuracion(nuevaDuracion.trim());
+
+                    String resServEdit = ssModifServ.modificarServicio(servicioAEditar);
+
+                    if ("OK".equals(resServEdit)) {
+                        JOptionPane.showMessageDialog(null, "Servicio modificado correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, resServEdit);
                     }
                     break;
                     
