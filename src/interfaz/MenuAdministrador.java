@@ -26,8 +26,9 @@ public class MenuAdministrador {
                     + "6. Ver clientes\n"
                     + "7. Ver profesionales\n"
                     + "8. Ver servicios\n"
-                    + "10. Buscar cliente\n"
                     + "9. Ver turnos\n"
+                    + "10. Buscar cliente\n"
+                    + "11. Modificar cliente\n"
                     + "0. Volver"
             ));
 
@@ -303,6 +304,51 @@ public class MenuAdministrador {
                     }
 
                     JOptionPane.showMessageDialog(null, sbBusq.toString());
+                    break;
+                    
+                case 11:
+                    UsuarioService usModif = new UsuarioService();
+                    ArrayList<modelo.Cliente> clientesModif = usModif.listarClientes();
+
+                    if (clientesModif.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No hay clientes registrados.");
+                        break;
+                    }
+
+                    StringBuilder sbModif = new StringBuilder("Seleccioná el cliente a modificar:\n\n");
+                    for (int i = 0; i < clientesModif.size(); i++) {
+                        modelo.Cliente c = clientesModif.get(i);
+                        sbModif.append((i + 1) + ". " + c.getNombre() + " " + c.getApellido()
+                                + " | " + c.getEmail() + "\n");
+                    }
+                    sbModif.append("\nIngresá el número (0 para cancelar):");
+
+                    int numModif = Integer.parseInt(JOptionPane.showInputDialog(sbModif.toString()));
+                    if (numModif == 0 || numModif > clientesModif.size()) break;
+
+                    modelo.Cliente clienteAModif = clientesModif.get(numModif - 1);
+
+                    String nuevoNombre   = JOptionPane.showInputDialog("Nombre:", clienteAModif.getNombre());
+                    String nuevoApellido = JOptionPane.showInputDialog("Apellido:", clienteAModif.getApellido());
+                    String nuevoDni      = JOptionPane.showInputDialog("DNI:", clienteAModif.getDni());
+                    String nuevoTel      = JOptionPane.showInputDialog("Teléfono:", clienteAModif.getTelefono());
+                    String nuevaFnac     = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):", clienteAModif.getFechaNacimiento());
+
+                    if (nuevoNombre == null || nuevoApellido == null) break; // canceló
+
+                    clienteAModif.setNombre(nuevoNombre.trim());
+                    clienteAModif.setApellido(nuevoApellido.trim());
+                    clienteAModif.setDni(nuevoDni != null ? nuevoDni.trim() : "");
+                    clienteAModif.setTelefono(nuevoTel != null ? nuevoTel.trim() : "");
+                    clienteAModif.setFechaNacimiento(nuevaFnac != null ? nuevaFnac.trim() : "");
+
+                    String resModif = usModif.modificarDatos(clienteAModif);
+
+                    if ("OK".equals(resModif)) {
+                        JOptionPane.showMessageDialog(null, "Cliente modificado correctamente.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, resModif);
+                    }
                     break;
                     
                 case 0:
