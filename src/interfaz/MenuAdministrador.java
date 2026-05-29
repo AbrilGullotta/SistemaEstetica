@@ -26,6 +26,7 @@ public class MenuAdministrador {
                     + "6. Ver clientes\n"
                     + "7. Ver profesionales\n"
                     + "8. Ver servicios\n"
+                    + "10. Buscar cliente\n"
                     + "9. Ver turnos\n"
                     + "0. Volver"
             ));
@@ -195,6 +196,7 @@ public class MenuAdministrador {
                     }
                 }
                 break;
+                
                 case 6:
                     UsuarioService usVer = new UsuarioService();
                     ArrayList<modelo.Cliente> clientes = usVer.listarClientes();
@@ -274,6 +276,35 @@ public class MenuAdministrador {
                         JOptionPane.showMessageDialog(null, mensaje);
                     }
                     break;
+                 
+                case 10:
+                    String criterio = JOptionPane.showInputDialog(
+                            "Buscar cliente\nIngresá nombre, apellido o teléfono:");
+
+                    if (criterio == null || criterio.trim().isEmpty()) break;
+
+                    UsuarioService usBuscar = new UsuarioService();
+                    ArrayList<modelo.Cliente> clientesEncontrados = usBuscar.buscarClientes(criterio);
+
+                    if (clientesEncontrados.isEmpty()) {
+                        JOptionPane.showMessageDialog(null,
+                                "No se encontraron clientes con ese criterio.");
+                        break;
+                    }
+
+                    StringBuilder sbBusq = new StringBuilder(
+                            "Resultados para \"" + criterio + "\":\n\n");
+                    for (modelo.Cliente c : clientesEncontrados) {
+                        sbBusq.append("• " + c.getNombre() + " " + c.getApellido() + "\n");
+                        sbBusq.append("  DNI: " + c.getDni() + "\n");
+                        sbBusq.append("  Email: " + c.getEmail() + "\n");
+                        sbBusq.append("  Tel: " + c.getTelefono() + "\n");
+                        sbBusq.append("-----------------------------\n");
+                    }
+
+                    JOptionPane.showMessageDialog(null, sbBusq.toString());
+                    break;
+                    
                 case 0:
                     JOptionPane.showMessageDialog(null, "Volviendo al menú principal");
                     break;

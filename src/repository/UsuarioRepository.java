@@ -166,7 +166,43 @@ public class UsuarioRepository {
         return profesionales;
     }
 
+// Buscar Clientes
+    
+    public ArrayList<Cliente> buscarClientes(String criterio) {
 
+        ArrayList<Cliente> clientes = new ArrayList<>();
+        String busqueda = "%" + criterio.trim().toLowerCase() + "%";
+        String sql = "SELECT * FROM usuario WHERE rol = 'CLIENTE' "
+                   + "AND (LOWER(nombre) LIKE ? OR LOWER(apellido) LIKE ? OR telefono LIKE ?) "
+                   + "ORDER BY apellido, nombre";
+
+        try (Connection conn = Conexion.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, busqueda);
+            ps.setString(2, busqueda);
+            ps.setString(3, busqueda);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Cliente c = new Cliente();
+                c.setIdUsuario(rs.getInt("id_usuario"));
+                c.setNombre(rs.getString("nombre"));
+                c.setApellido(rs.getString("apellido"));
+                c.setDni(rs.getString("dni"));
+                c.setEmail(rs.getString("email"));
+                c.setTelefono(rs.getString("telefono"));
+                c.setFechaNacimiento(rs.getString("fecha_nacimiento"));
+                clientes.add(c);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al buscar clientes: " + e.getMessage());
+        }
+
+        return clientes;
+    }
+    
     // Modificar
 
 

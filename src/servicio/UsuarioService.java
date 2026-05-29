@@ -85,6 +85,14 @@ public class UsuarioService {
     public ArrayList<Profesional> listarProfesionales() {
         return repo.listarProfesionales();
     }
+    
+   // Buscar Cliente
+    public ArrayList<Cliente> buscarClientes(String criterio) {
+        if (criterio == null || criterio.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return repo.buscarClientes(criterio);
+    }
 
 
     // Modificar
