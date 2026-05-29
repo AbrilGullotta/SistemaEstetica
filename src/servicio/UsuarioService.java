@@ -86,6 +86,12 @@ public class UsuarioService {
         return repo.listarProfesionales();
     }
     
+    //Buscar por id 
+    
+    public modelo.Usuario buscarPorId(int idUsuario) {
+        return repo.buscarPorId(idUsuario);
+    }
+    
    // Buscar Cliente
     public ArrayList<Cliente> buscarClientes(String criterio) {
         if (criterio == null || criterio.trim().isEmpty()) {

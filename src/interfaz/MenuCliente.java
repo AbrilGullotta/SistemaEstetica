@@ -38,6 +38,8 @@ public class MenuCliente {
         	        + "4. Ver servicios disponibles\n"
         	        + "5. Ver profesionales\n"
         	        + "6. Pagar seña\n"
+        	        + "7. Mi perfil\n"
+        	        + "8. Modificar mis datos\n"
         	        + "0. Volver"
         	));
 
@@ -48,6 +50,8 @@ public class MenuCliente {
             case 4: verServicios(); break;
             case 5: verProfesionales(); break; 
             case 6: pagarSenia(); break;
+            case 7: verPerfil(); break;
+            case 8: modificarPerfil(); break;
       
                 default:
                     JOptionPane.showMessageDialog(null, "Opción inválida");
@@ -329,6 +333,64 @@ public class MenuCliente {
             } else {
                 JOptionPane.showMessageDialog(null, resultado);
             }
+        }
+    }
+    private void verPerfil() {
+
+        UsuarioService us = new UsuarioService();
+        modelo.Usuario u = us.buscarPorId(clienteLogueado.getIdUsuario());
+
+        if (u == null) {
+            JOptionPane.showMessageDialog(null, "No se pudo obtener la información del perfil.");
+            return;
+        }
+
+        JOptionPane.showMessageDialog(null,
+                "MI PERFIL\n\n"
+                + "Nombre: " + u.getNombre() + " " + u.getApellido() + "\n"
+                + "DNI: " + (u.getDni() != null ? u.getDni() : "-") + "\n"
+                + "Email: " + u.getEmail() + "\n"
+                + "Teléfono: " + (u.getTelefono() != null ? u.getTelefono() : "-") + "\n"
+                + "Fecha de nacimiento: " + (u.getFechaNacimiento() != null ? u.getFechaNacimiento() : "-")
+        );
+    }
+
+    private void modificarPerfil() {
+
+        UsuarioService us = new UsuarioService();
+        modelo.Usuario u = us.buscarPorId(clienteLogueado.getIdUsuario());
+
+        if (u == null) {
+            JOptionPane.showMessageDialog(null, "No se pudo obtener la información del perfil.");
+            return;
+        }
+
+        String nuevoNombre   = JOptionPane.showInputDialog("Nombre:", u.getNombre());
+        if (nuevoNombre == null) return; // canceló
+
+        String nuevoApellido = JOptionPane.showInputDialog("Apellido:", u.getApellido());
+        if (nuevoApellido == null) return;
+
+        String nuevoDni      = JOptionPane.showInputDialog("DNI:", u.getDni());
+        String nuevoTel      = JOptionPane.showInputDialog("Teléfono:", u.getTelefono());
+        String nuevaFnac     = JOptionPane.showInputDialog(
+                "Fecha de nacimiento (AAAA-MM-DD):", u.getFechaNacimiento());
+
+        u.setNombre(nuevoNombre.trim());
+        u.setApellido(nuevoApellido.trim());
+        u.setDni(nuevoDni != null ? nuevoDni.trim() : "");
+        u.setTelefono(nuevoTel != null ? nuevoTel.trim() : "");
+        u.setFechaNacimiento(nuevaFnac != null ? nuevaFnac.trim() : "");
+
+        String resultado = us.modificarDatos(u);
+
+        if ("OK".equals(resultado)) {
+            // Actualizar nombre en sesión para que el menú lo muestre correctamente
+            clienteLogueado.setNombre(u.getNombre());
+            clienteLogueado.setApellido(u.getApellido());
+            JOptionPane.showMessageDialog(null, "Datos actualizados correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(null, resultado);
         }
     }
 }
