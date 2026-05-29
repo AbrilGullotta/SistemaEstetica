@@ -29,6 +29,7 @@ public class MenuAdministrador {
                     + "9. Ver turnos\n"
                     + "10. Buscar cliente\n"
                     + "11. Modificar cliente\n"
+                    + "12. Modificar turno\n"
                     + "0. Volver"
             ));
 
@@ -348,6 +349,115 @@ public class MenuAdministrador {
                         JOptionPane.showMessageDialog(null, "Cliente modificado correctamente.");
                     } else {
                         JOptionPane.showMessageDialog(null, resModif);
+                    }
+                    break;
+                    
+                case 12:
+                    ArrayList<Turno> turnosModif = turnoService.listarTurnos();
+                    ArrayList<Turno> modificables = new ArrayList<>();
+
+                    for (Turno t : turnosModif) {
+                        if (t.getEstado().equals("RESERVADO") || t.getEstado().equals("CONFIRMADO")) {
+                            modificables.add(t);
+                        }
+                    }
+
+                    if (modificables.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "No hay turnos activos para modificar.");
+                        break;
+                    }
+
+                    StringBuilder sbTurnos = new StringBuilder("Seleccioná el turno a modificar:\n\n");
+                    for (int i = 0; i < modificables.size(); i++) {
+                        Turno t = modificables.get(i);
+                        sbTurnos.append((i + 1) + ". " + t.getFecha() + " " + t.getHora()
+                                + " | " + t.getCliente().getNombre() + " " + t.getCliente().getApellido()
+                                + " | " + t.getServicio().getNombre()
+                                + " | " + t.getProfesional().getNombre() + " " + t.getProfesional().getApellido()
+                                + " | " + t.getEstado() + "\n");
+                    }
+                    sbTurnos.append("\nIngresá el número (0 para cancelar):");
+
+                    int numTModif = Integer.parseInt(JOptionPane.showInputDialog(sbTurnos.toString()));
+                    if (numTModif == 0 || numTModif > modificables.size()) break;
+
+                    Turno turnoAModif = modificables.get(numTModif - 1);
+
+                    // Elegir nueva fecha
+                    String nuevaFecha = JOptionPane.showInputDialog(
+                            "Nueva fecha (AAAA-MM-DD):", turnoAModif.getFecha());
+                    if (nuevaFecha == null || nuevaFecha.trim().isEmpty()) break;
+
+                    // Elegir nuevo servicio
+                    ServicioService ssModif = new ServicioService();
+                    ArrayList<modelo.Servicio> serviciosModif = ssModif.listarServicios();
+                    StringBuilder sbServModif = new StringBuilder("Seleccioná el servicio:\n");
+                    for (int i = 0; i < serviciosModif.size(); i++) {
+                        modelo.Servicio s = serviciosModif.get(i);
+                        sbServModif.append((i + 1) + ". " + s.getNombre() + " - $" + s.getPrecio() + "\n");
+                    }
+                    int numServModif = Integer.parseInt(JOptionPane.showInputDialog(sbServModif.toString()));
+                    if (numServModif < 1 || numServModif > serviciosModif.size()) break;
+                    modelo.Servicio servicioModif = serviciosModif.get(numServModif - 1);
+
+                    // Elegir nuevo profesional
+                    UsuarioService usProfModif = new UsuarioService();
+                    ArrayList<modelo.Profesional> profsModif = usProfModif.listarProfesionales();
+                    StringBuilder sbProfModif = new StringBuilder("Seleccioná el profesional:\n");
+                    for (int i = 0; i < profsModif.size(); i++) {
+                        modelo.Profesional p = profsModif.get(i);
+                        sbProfModif.append((i + 1) + ". " + p.getNombre() + " " + p.getApellido()
+                                + " - " + p.getEspecialidad() + "\n");
+                    }
+                    int numProfModif = Integer.parseInt(JOptionPane.showInputDialog(sbProfModif.toString()));
+                    if (numProfModif < 1 || numProfModif > profsModif.size()) break;
+                    modelo.Profesional profesionalModif = profsModif.get(numProfModif - 1);
+
+                    // Elegir nuevo horario según disponibilidad
+                    ArrayList<String> horariosModif = turnoService.obtenerHorariosDisponibles(
+                            profesionalModif.getIdUsuario(),
+                            nuevaFecha.trim(),
+                            servicioModif.getDuracion()
+                    );
+
+                    if (horariosModif.isEmpty()) {
+                        JOptionPane.showMessageDialog(null,
+                                "No hay horarios disponibles para esa fecha y profesional.");
+                        break;
+                    }
+
+                    StringBuilder sbHorModif = new StringBuilder("Horarios disponibles:\n");
+                    for (int i = 0; i < horariosModif.size(); i++) {
+                        sbHorModif.append((i + 1) + ". " + horariosModif.get(i) + "\n");
+                    }
+                    int numHorModif = Integer.parseInt(JOptionPane.showInputDialog(sbHorModif.toString()));
+                    if (numHorModif < 1 || numHorModif > horariosModif.size()) break;
+                    String horaModif = horariosModif.get(numHorModif - 1);
+
+                    // Confirmar y guardar
+                    int confirmaModif = JOptionPane.showConfirmDialog(null,
+                            "Confirmás la modificación?\n\n"
+                            + "Fecha: " + nuevaFecha.trim() + "\n"
+                            + "Hora: " + horaModif + "\n"
+                            + "Servicio: " + servicioModif.getNombre() + "\n"
+                            + "Profesional: " + profesionalModif.getNombre() + " " + profesionalModif.getApellido(),
+                            "Confirmar modificación",
+                            JOptionPane.YES_NO_OPTION
+                    );
+
+                    if (confirmaModif == JOptionPane.YES_OPTION) {
+                        String resModifT = turnoService.modificarTurno(
+                                turnoAModif.getIdTurno(),
+                                nuevaFecha.trim(),
+                                horaModif,
+                                profesionalModif.getIdUsuario(),
+                                servicioModif.getIdServicio()
+                        );
+                        if ("OK".equals(resModifT)) {
+                            JOptionPane.showMessageDialog(null, "Turno modificado correctamente.");
+                        } else {
+                            JOptionPane.showMessageDialog(null, resModifT);
+                        }
                     }
                     break;
                     

@@ -170,6 +170,32 @@ public class TurnoRepository {
 
         return false;
     }
+    
+ // Excluir turno que se esta editanto
+    
+    public boolean existeTurnoOcupadoExcluyendo(int idProfesional, String fecha,
+                                                 String hora, int idTurnoExcluir) {
+
+        String sql = "SELECT id_turno FROM turno "
+                   + "WHERE id_profesional = ? AND fecha = ? AND hora = ? "
+                   + "AND estado IN ('RESERVADO', 'CONFIRMADO') "
+                   + "AND id_turno != ?";
+
+        try (Connection conn = Conexion.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idProfesional);
+            ps.setString(2, fecha);
+            ps.setString(3, hora);
+            ps.setInt(4, idTurnoExcluir);
+
+            return ps.executeQuery().next();
+
+        } catch (SQLException e) {
+            System.out.println("Error al validar turno: " + e.getMessage());
+            return false;
+        }
+    }
 
 
     // Mapper privado
@@ -220,6 +246,32 @@ public class TurnoRepository {
 
         } catch (SQLException e) {
             System.out.println("Error al cambiar estado: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    
+   // Modificar turno
+    
+    public boolean modificarTurno(int idTurno, String nuevaFecha, String nuevaHora,
+                                   int idServicio, int idProfesional) {
+
+        String sql = "UPDATE turno SET fecha=?, hora=?, id_servicio=?, id_profesional=? "
+                   + "WHERE id_turno=?";
+
+        try (Connection conn = Conexion.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nuevaFecha);
+            ps.setString(2, nuevaHora);
+            ps.setInt(3, idServicio);
+            ps.setInt(4, idProfesional);
+            ps.setInt(5, idTurno);
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al modificar turno: " + e.getMessage());
             return false;
         }
     }

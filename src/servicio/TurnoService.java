@@ -122,4 +122,18 @@ public class TurnoService {
     	
         return turnoRepo.cambiarEstado(idTurno, "CANCELADO") ? "OK" : "ERROR: No se pudo cancelar el turno.";
     }
+    
+ // Modificar turno
+    public String modificarTurno(int idTurno, String nuevaFecha, String nuevaHora,
+                                  int idProfesional, int idServicio) {
+
+        // Verificar que el nuevo horario no esté ocupado por otro turno
+        boolean ocupado = turnoRepo.existeTurnoOcupadoExcluyendo(idProfesional, nuevaFecha, nuevaHora, idTurno);
+        if (ocupado) {
+            return "ERROR: El profesional ya tiene un turno en ese horario.";
+        }
+
+        boolean ok = turnoRepo.modificarTurno(idTurno, nuevaFecha, nuevaHora, idServicio, idProfesional);
+        return ok ? "OK" : "ERROR: No se pudo modificar el turno.";
+    }
 }
