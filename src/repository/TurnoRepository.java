@@ -275,4 +275,24 @@ public class TurnoRepository {
             return false;
         }
     }
+    
+    //Obtiene el ultimo id de reserva
+    public int obtenerUltimoIdTurno(int idCliente) {
+
+        String sql = "SELECT id_turno FROM turno WHERE id_cliente = ? "
+                   + "ORDER BY id_turno DESC LIMIT 1";
+
+        try (Connection conn = Conexion.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idCliente);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt("id_turno");
+
+        } catch (SQLException e) {
+            System.out.println("Error al obtener id turno: " + e.getMessage());
+        }
+
+        return -1;
+    }
 }

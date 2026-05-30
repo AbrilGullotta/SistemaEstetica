@@ -16,7 +16,8 @@ public class TurnoService {
 
     private TurnoRepository turnoRepo = new TurnoRepository();
     private DisponibilidadRepository dispRepo = new DisponibilidadRepository();
-
+    private RecordatorioService recordatorioService = new RecordatorioService();
+    
     public void registrarTurno(Turno turno) {
         boolean ocupado = turnoRepo.existeTurnoReservado(
                 turno.getProfesional().getIdUsuario(),
@@ -101,6 +102,10 @@ public class TurnoService {
         turno.setEstado("RESERVADO");
 
         boolean ok = turnoRepo.guardarTurno(turno);
+        if (ok) {
+            int idTurno = turnoRepo.obtenerUltimoIdTurno(cliente.getIdUsuario());
+            recordatorioService.programarRecordatorio(idTurno);
+        }
         return ok ? "OK" : "ERROR: No se pudo guardar el turno.";
     }
 
@@ -136,4 +141,5 @@ public class TurnoService {
         boolean ok = turnoRepo.modificarTurno(idTurno, nuevaFecha, nuevaHora, idServicio, idProfesional);
         return ok ? "OK" : "ERROR: No se pudo modificar el turno.";
     }
+    
 }
