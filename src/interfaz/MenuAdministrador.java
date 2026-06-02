@@ -38,18 +38,45 @@ public class MenuAdministrador {
 
             switch (opcion) {
             case 1:
-                String nombre    = JOptionPane.showInputDialog("Nombre:");
-                String apellido  = JOptionPane.showInputDialog("Apellido:");
-                String dni       = JOptionPane.showInputDialog("DNI:");
-                String email     = JOptionPane.showInputDialog("Email:");
-                String telefono  = JOptionPane.showInputDialog("Teléfono:");
-                String pass      = JOptionPane.showInputDialog("Contraseña:");
-                String fnac      = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):");
+                String nombre = Validador.pedirCampoObligatorio("Nombre");
+                if (nombre == null) break;
+
+                String apellido = Validador.pedirCampoObligatorio("Apellido");
+                if (apellido == null) break;
+
+                String dni = JOptionPane.showInputDialog("DNI:");
+                if (!Validador.esDniValido(dni)) {
+                    JOptionPane.showMessageDialog(null, "DNI inválido. Debe tener 7 u 8 dígitos.");
+                    break;
+                }
+
+                String email = JOptionPane.showInputDialog("Email:");
+                if (!Validador.esEmailValido(email)) {
+                    JOptionPane.showMessageDialog(null, "Email inválido.");
+                    break;
+                }
+
+                String telefono = JOptionPane.showInputDialog("Teléfono:");
+                if (!Validador.esTelefonoValido(telefono)) {
+                    JOptionPane.showMessageDialog(null, "Teléfono inválido. Solo números, entre 8 y 15 dígitos.");
+                    break;
+                }
+
+                String pass = JOptionPane.showInputDialog("Contraseña:");
+                if (!Validador.esContraseniaValida(pass)) {
+                    JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 8 caracteres, una letra y un número.");
+                    break;
+                }
+
+                String fnac = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):");
+                if (!Validador.esFechaValida(fnac)) {
+                    JOptionPane.showMessageDialog(null, "Fecha inválida. Usá el formato AAAA-MM-DD.");
+                    break;
+                }
 
                 UsuarioService usuarioService = new UsuarioService();
                 String resultado = usuarioService.registrarCliente(
-                        nombre, apellido, dni, email, telefono, pass, fnac
-                );
+                        nombre, apellido, dni, email, telefono, pass, fnac);
 
                 if ("OK".equals(resultado)) {
                     JOptionPane.showMessageDialog(null, "Cliente registrado correctamente.");
@@ -59,18 +86,45 @@ public class MenuAdministrador {
                 break;
                 
             case 2:
-                String nomProf   = JOptionPane.showInputDialog("Nombre:");
-                String apProf    = JOptionPane.showInputDialog("Apellido:");
-                String dniProf   = JOptionPane.showInputDialog("DNI:");
+                String nomProf = Validador.pedirCampoObligatorio("Nombre");
+                if (nomProf == null) break;
+
+                String apProf = Validador.pedirCampoObligatorio("Apellido");
+                if (apProf == null) break;
+
+                String dniProf = JOptionPane.showInputDialog("DNI:");
+                if (!Validador.esDniValido(dniProf)) {
+                    JOptionPane.showMessageDialog(null, "DNI inválido. Debe tener 7 u 8 dígitos.");
+                    break;
+                }
+
                 String emailProf = JOptionPane.showInputDialog("Email:");
-                String telProf   = JOptionPane.showInputDialog("Teléfono:");
-                String passProf  = JOptionPane.showInputDialog("Contraseña:");
-                String espec     = JOptionPane.showInputDialog("Especialidad:");
+                if (!Validador.esEmailValido(emailProf)) {
+                    JOptionPane.showMessageDialog(null, "Email inválido.");
+                    break;
+                }
+
+                String telProf = JOptionPane.showInputDialog("Teléfono:");
+                if (!Validador.esTelefonoValido(telProf)) {
+                    JOptionPane.showMessageDialog(null, "Teléfono inválido. Solo números, entre 8 y 15 dígitos.");
+                    break;
+                }
+
+                String passProf = JOptionPane.showInputDialog("Contraseña:");
+                if (!Validador.esContraseniaValida(passProf)) {
+                    JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 8 caracteres, una letra y un número.");
+                    break;
+                }
+
+                String espec = JOptionPane.showInputDialog("Especialidad:");
+                if (!Validador.esValido(espec)) {
+                    JOptionPane.showMessageDialog(null, "La especialidad es obligatoria.");
+                    break;
+                }
 
                 UsuarioService us = new UsuarioService();
                 String resProf = us.registrarProfesional(
-                        nomProf, apProf, dniProf, emailProf, telProf, passProf, espec
-                );
+                        nomProf, apProf, dniProf, emailProf, telProf, passProf, espec);
 
                 if ("OK".equals(resProf)) {
                     JOptionPane.showMessageDialog(null, "Profesional registrado correctamente.");
