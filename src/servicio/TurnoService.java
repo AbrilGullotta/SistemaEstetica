@@ -137,7 +137,9 @@ public class TurnoService {
  // Modificar turno
     public String modificarTurno(int idTurno, String nuevaFecha, String nuevaHora,
                                   int idProfesional, int idServicio) {
-
+    	if (!Validador.esFechaFutura(nuevaFecha)) {
+            return "ERROR: La nueva fecha debe ser hoy o en el futuro.";
+        }
         // Verificar que el nuevo horario no esté ocupado por otro turno
         boolean ocupado = turnoRepo.existeTurnoOcupadoExcluyendo(idProfesional, nuevaFecha, nuevaHora, idTurno);
         if (ocupado) {
