@@ -19,19 +19,7 @@ public class TurnoService {
     private DisponibilidadRepository dispRepo = new DisponibilidadRepository();
     private RecordatorioService recordatorioService = new RecordatorioService();
     
-    public void registrarTurno(Turno turno) {
-        boolean ocupado = turnoRepo.existeTurnoReservado(
-                turno.getProfesional().getIdUsuario(),
-                turno.getFecha(),
-                turno.getHora()
-        );
-
-        if (ocupado) {
-            System.out.println("El profesional ya tiene un turno en ese horario.");
-        } else {
-            turnoRepo.guardarTurno(turno);
-        }
-    }
+   
 
     public ArrayList<Turno> listarTurnos() {
         return turnoRepo.listarTurnos();
