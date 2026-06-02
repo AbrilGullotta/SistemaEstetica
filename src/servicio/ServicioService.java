@@ -3,6 +3,7 @@ package servicio;
 import java.util.ArrayList;
 import modelo.Servicio;
 import repository.ServicioRepository;
+import util.Validador;
 
 public class ServicioService {
 
@@ -10,9 +11,9 @@ public class ServicioService {
 
     public String registrarServicio(String nombre, String precioStr, String duracion) {
 
-        if (nombre.trim().isEmpty() || precioStr.trim().isEmpty() || duracion.trim().isEmpty()) {
-            return "ERROR: Todos los campos son obligatorios.";
-        }
+    	if (!Validador.esValido(nombre) || !Validador.esValido(precioStr) || !Validador.esValido(duracion)) {
+    	    return "ERROR: Todos los campos son obligatorios.";
+    	}
 
         double precio;
         try {
