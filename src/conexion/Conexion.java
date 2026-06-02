@@ -12,23 +12,18 @@ public class Conexion {
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
+    private static Connection instancia;
+    
     public static Connection conectar() {
+        
+    	try {
 
-        Connection conexion = null;
-
-        try {
-
-            conexion = DriverManager.getConnection(URL, USER, PASSWORD);
-
-            System.out.println("Conexión exitosa");
-
-        } catch (SQLException e) {
-
-            System.out.println("Error de conexión");
-            e.printStackTrace();
-
-        }
-
-        return conexion;
-    }
-}
+    		 if (instancia == null || instancia.isClosed()) {
+                 instancia = DriverManager.getConnection(URL, USER, PASSWORD);
+             }
+         } catch (SQLException e) {
+             System.out.println("Error de conexión: " + e.getMessage());
+         }
+         return instancia;
+     }
+ }
