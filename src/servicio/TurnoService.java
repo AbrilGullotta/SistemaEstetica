@@ -3,7 +3,6 @@ package servicio;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
 import modelo.Cliente;
 import modelo.Disponibilidad;
 import modelo.Profesional;
@@ -11,6 +10,8 @@ import modelo.Servicio;
 import modelo.Turno;
 import repository.DisponibilidadRepository;
 import repository.TurnoRepository;
+import util.Validador;
+
 
 public class TurnoService {
 
@@ -84,7 +85,10 @@ public class TurnoService {
     
     public String reservarTurno(Cliente cliente, Profesional profesional,
                                  Servicio servicio, String fecha, String hora) {
-
+    	
+    	if (!Validador.esFechaFutura(fecha)) {
+            return "ERROR: La fecha del turno debe ser hoy o en el futuro.";
+    	}
         boolean ocupado = turnoRepo.existeTurnoReservado(
                 profesional.getIdUsuario(), fecha, hora
         );
@@ -105,10 +109,12 @@ public class TurnoService {
         if (ok) {
             int idTurno = turnoRepo.obtenerUltimoIdTurno(cliente.getIdUsuario());
             recordatorioService.programarRecordatorio(idTurno);
+            
         }
         return ok ? "OK" : "ERROR: No se pudo guardar el turno.";
     }
-
+    	 
+   
     private int parsearDuracion(String duracion) {
        
     	// Formato esperado: HH:MM:SS

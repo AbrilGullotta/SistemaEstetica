@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import modelo.Turno;
 import servicio.TurnoService;
 import servicio.UsuarioService;
-import servicio.UsuarioService;
 import servicio.ServicioService;
+import util.Validador;
 
 public class MenuAdministrador {
 	
@@ -16,7 +16,7 @@ public class MenuAdministrador {
         int opcion;
 
         do {
-            opcion = Integer.parseInt(JOptionPane.showInputDialog(
+            String inputOpcion = JOptionPane.showInputDialog(
                     "MENU ADMINISTRADOR\n"
                     + "1. Registrar cliente\n"
                     + "2. Registrar profesional\n"
@@ -32,7 +32,9 @@ public class MenuAdministrador {
                     + "12. Modificar turno\n"
                     + "13. Modificar servicio\n"
                     + "0. Volver"
-            ));
+            );
+            if (inputOpcion == null) break; // usuario cerró la ventana
+            opcion = Integer.parseInt(inputOpcion);
 
             switch (opcion) {
             case 1:
@@ -110,7 +112,9 @@ public class MenuAdministrador {
                 }
                 sbGestion.append("\nIngresá el número del turno a gestionar (0 para cancelar):");
 
-                int numTurno = Integer.parseInt(JOptionPane.showInputDialog(sbGestion.toString()));
+                String inputGestion = JOptionPane.showInputDialog(sbGestion.toString());
+                if (inputGestion == null) break;
+                int numTurno = Integer.parseInt(inputGestion);
                 if (numTurno == 0 || numTurno > todosLosTurnos.size()) break;
 
                 Turno turnoElegido = todosLosTurnos.get(numTurno - 1);
@@ -126,6 +130,7 @@ public class MenuAdministrador {
                         + "3. COMPLETADO\n"
                         + "0. Volver"
                 );
+                if (accion == null) break;
 
                 String nuevoEstado = null;
                 switch (accion) {
@@ -170,7 +175,9 @@ public class MenuAdministrador {
                 }
                 sbSenia.append("\nIngresá el número (0 para cancelar):");
 
-                int numSenia = Integer.parseInt(JOptionPane.showInputDialog(sbSenia.toString()));
+                String inputSenia = JOptionPane.showInputDialog(sbSenia.toString());
+                if (inputSenia == null) break;
+                int numSenia = Integer.parseInt(inputSenia);
                 if (numSenia == 0 || numSenia > aptosSenia.size()) break;
 
                 Turno turnoParaSenia = aptosSenia.get(numSenia - 1);
@@ -239,6 +246,7 @@ public class MenuAdministrador {
                     }
                     JOptionPane.showMessageDialog(null, sbProfs.toString());
                     break;
+
                 case 8:
                     ServicioService ssVer = new ServicioService();
                     ArrayList<modelo.Servicio> servs = ssVer.listarServicios();
@@ -257,6 +265,7 @@ public class MenuAdministrador {
                     }
                     JOptionPane.showMessageDialog(null, sbServs.toString());
                     break;
+
                 case 9:
                     ArrayList<Turno> turnos = turnoService.listarTurnos();
 
@@ -283,7 +292,6 @@ public class MenuAdministrador {
                 case 10:
                     String criterio = JOptionPane.showInputDialog(
                             "Buscar cliente\nIngresá nombre, apellido o teléfono:");
-
                     if (criterio == null || criterio.trim().isEmpty()) break;
 
                     UsuarioService usBuscar = new UsuarioService();
@@ -325,7 +333,9 @@ public class MenuAdministrador {
                     }
                     sbModif.append("\nIngresá el número (0 para cancelar):");
 
-                    int numModif = Integer.parseInt(JOptionPane.showInputDialog(sbModif.toString()));
+                    String inputModif = JOptionPane.showInputDialog(sbModif.toString());
+                    if (inputModif == null) break;
+                    int numModif = Integer.parseInt(inputModif);
                     if (numModif == 0 || numModif > clientesModif.size()) break;
 
                     modelo.Cliente clienteAModif = clientesModif.get(numModif - 1);
@@ -336,13 +346,26 @@ public class MenuAdministrador {
                     String nuevoTel      = JOptionPane.showInputDialog("Teléfono:", clienteAModif.getTelefono());
                     String nuevaFnac     = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):", clienteAModif.getFechaNacimiento());
 
-                    if (nuevoNombre == null || nuevoApellido == null) break; // canceló
+                    if (nuevoNombre == null || nuevoApellido == null) break;
+
+                    if (!Validador.esDniValido(nuevoDni)) {
+                        JOptionPane.showMessageDialog(null, "DNI inválido. Debe tener 7 u 8 dígitos.");
+                        break;
+                    }
+                    if (!Validador.esTelefonoValido(nuevoTel)) {
+                        JOptionPane.showMessageDialog(null, "Teléfono inválido. Solo números, entre 8 y 15 dígitos.");
+                        break;
+                    }
+                    if (!Validador.esFechaValida(nuevaFnac)) {
+                        JOptionPane.showMessageDialog(null, "Fecha inválida. Formato: AAAA-MM-DD.");
+                        break;
+                    }
 
                     clienteAModif.setNombre(nuevoNombre.trim());
                     clienteAModif.setApellido(nuevoApellido.trim());
-                    clienteAModif.setDni(nuevoDni != null ? nuevoDni.trim() : "");
-                    clienteAModif.setTelefono(nuevoTel != null ? nuevoTel.trim() : "");
-                    clienteAModif.setFechaNacimiento(nuevaFnac != null ? nuevaFnac.trim() : "");
+                    clienteAModif.setDni(nuevoDni.trim());
+                    clienteAModif.setTelefono(nuevoTel.trim());
+                    clienteAModif.setFechaNacimiento(nuevaFnac.trim());
 
                     String resModif = usModif.modificarDatos(clienteAModif);
 
@@ -379,17 +402,22 @@ public class MenuAdministrador {
                     }
                     sbTurnos.append("\nIngresá el número (0 para cancelar):");
 
-                    int numTModif = Integer.parseInt(JOptionPane.showInputDialog(sbTurnos.toString()));
+                    String inputTModif = JOptionPane.showInputDialog(sbTurnos.toString());
+                    if (inputTModif == null) break;
+                    int numTModif = Integer.parseInt(inputTModif);
                     if (numTModif == 0 || numTModif > modificables.size()) break;
 
                     Turno turnoAModif = modificables.get(numTModif - 1);
 
-                    // Elegir nueva fecha
                     String nuevaFecha = JOptionPane.showInputDialog(
                             "Nueva fecha (AAAA-MM-DD):", turnoAModif.getFecha());
                     if (nuevaFecha == null || nuevaFecha.trim().isEmpty()) break;
 
-                    // Elegir nuevo servicio
+                    if (!Validador.esFechaFutura(nuevaFecha.trim())) {
+                        JOptionPane.showMessageDialog(null, "La fecha debe ser hoy o en el futuro.");
+                        break;
+                    }
+
                     ServicioService ssModif = new ServicioService();
                     ArrayList<modelo.Servicio> serviciosModif = ssModif.listarServicios();
                     StringBuilder sbServModif = new StringBuilder("Seleccioná el servicio:\n");
@@ -397,11 +425,12 @@ public class MenuAdministrador {
                         modelo.Servicio s = serviciosModif.get(i);
                         sbServModif.append((i + 1) + ". " + s.getNombre() + " - $" + s.getPrecio() + "\n");
                     }
-                    int numServModif = Integer.parseInt(JOptionPane.showInputDialog(sbServModif.toString()));
+                    String inputServModif = JOptionPane.showInputDialog(sbServModif.toString());
+                    if (inputServModif == null) break;
+                    int numServModif = Integer.parseInt(inputServModif);
                     if (numServModif < 1 || numServModif > serviciosModif.size()) break;
                     modelo.Servicio servicioModif = serviciosModif.get(numServModif - 1);
 
-                    // Elegir nuevo profesional
                     UsuarioService usProfModif = new UsuarioService();
                     ArrayList<modelo.Profesional> profsModif = usProfModif.listarProfesionales();
                     StringBuilder sbProfModif = new StringBuilder("Seleccioná el profesional:\n");
@@ -410,11 +439,12 @@ public class MenuAdministrador {
                         sbProfModif.append((i + 1) + ". " + p.getNombre() + " " + p.getApellido()
                                 + " - " + p.getEspecialidad() + "\n");
                     }
-                    int numProfModif = Integer.parseInt(JOptionPane.showInputDialog(sbProfModif.toString()));
+                    String inputProfModif = JOptionPane.showInputDialog(sbProfModif.toString());
+                    if (inputProfModif == null) break;
+                    int numProfModif = Integer.parseInt(inputProfModif);
                     if (numProfModif < 1 || numProfModif > profsModif.size()) break;
                     modelo.Profesional profesionalModif = profsModif.get(numProfModif - 1);
 
-                    // Elegir nuevo horario según disponibilidad
                     ArrayList<String> horariosModif = turnoService.obtenerHorariosDisponibles(
                             profesionalModif.getIdUsuario(),
                             nuevaFecha.trim(),
@@ -431,11 +461,12 @@ public class MenuAdministrador {
                     for (int i = 0; i < horariosModif.size(); i++) {
                         sbHorModif.append((i + 1) + ". " + horariosModif.get(i) + "\n");
                     }
-                    int numHorModif = Integer.parseInt(JOptionPane.showInputDialog(sbHorModif.toString()));
+                    String inputHorModif = JOptionPane.showInputDialog(sbHorModif.toString());
+                    if (inputHorModif == null) break;
+                    int numHorModif = Integer.parseInt(inputHorModif);
                     if (numHorModif < 1 || numHorModif > horariosModif.size()) break;
                     String horaModif = horariosModif.get(numHorModif - 1);
 
-                    // Confirmar y guardar
                     int confirmaModif = JOptionPane.showConfirmDialog(null,
                             "Confirmás la modificación?\n\n"
                             + "Fecha: " + nuevaFecha.trim() + "\n"
@@ -480,7 +511,9 @@ public class MenuAdministrador {
                     }
                     sbServEdit.append("\nIngresá el número (0 para cancelar):");
 
-                    int numServEdit = Integer.parseInt(JOptionPane.showInputDialog(sbServEdit.toString()));
+                    String inputServEdit = JOptionPane.showInputDialog(sbServEdit.toString());
+                    if (inputServEdit == null) break;
+                    int numServEdit = Integer.parseInt(inputServEdit);
                     if (numServEdit == 0 || numServEdit > serviciosEdit.size()) break;
 
                     modelo.Servicio servicioAEditar = serviciosEdit.get(numServEdit - 1);
@@ -502,6 +535,11 @@ public class MenuAdministrador {
                         nuevoPrecio = Double.parseDouble(nuevoPrecioStr.replace(",", "."));
                     } catch (NumberFormatException e) {
                         JOptionPane.showMessageDialog(null, "ERROR: El precio debe ser un número válido.");
+                        break;
+                    }
+
+                    if (!Validador.esValido(nuevoNombreServ)) {
+                        JOptionPane.showMessageDialog(null, "El nombre del servicio es obligatorio.");
                         break;
                     }
 

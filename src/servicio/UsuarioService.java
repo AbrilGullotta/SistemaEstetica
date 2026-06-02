@@ -1,11 +1,11 @@
 package servicio;
 
 import java.util.ArrayList;
-
 import modelo.Cliente;
 import modelo.Profesional;
 import modelo.Usuario;
 import repository.UsuarioRepository;
+import util.Validador;
 
 public class UsuarioService {
 
@@ -32,8 +32,24 @@ public class UsuarioService {
                                     String email, String telefono,
                                     String contrasenia, String fechaNacimiento) {
 
-        if (nombre.trim().isEmpty()|| apellido.trim().isEmpty() || email.trim().isEmpty() || contrasenia.trim().isEmpty()) {
-            return "ERROR: Nombre, apellido, email y contraseña son obligatorios.";
+    	if (!Validador.esValido(nombre) || !Validador.esValido(apellido)) {
+            return "ERROR: Nombre y apellido son obligatorios.";
+        }
+        if (!Validador.esDniValido(dni)) {
+            return "ERROR: DNI inválido. Debe tener 7 u 8 dígitos.";
+        }
+        if (!Validador.esEmailValido(email)) {
+            return "ERROR: Email inválido.";
+        }
+        if (!Validador.esTelefonoValido(telefono)) {
+            return "ERROR: Teléfono inválido. Solo números, entre 8 y 15 dígitos.";
+        }
+        if (!Validador.esContraseniaValida(contrasenia)) {
+            return "ERROR: La contraseña debe tener al menos 8 caracteres, una letra y un número.";
+        }
+        if (!Validador.esFechaValida(fechaNacimiento)) {
+            return "ERROR: Fecha de nacimiento inválida. Formato: AAAA-MM-DD.";
+        
         }
 
         Cliente cliente = new Cliente();
@@ -56,10 +72,24 @@ public class UsuarioService {
                                         String email, String telefono,
                                         String contrasenia, String especialidad) {
 
-        if (nombre.trim().isEmpty() || apellido.trim().isEmpty() || email.trim().isEmpty()
-                || contrasenia.trim().isEmpty() || especialidad.trim().isEmpty()) {
-            return "ERROR: Todos los campos son obligatorios para registrar un profesional.";
-        }
+    	  if (!Validador.esValido(nombre) || !Validador.esValido(apellido)) {
+    	        return "ERROR: Nombre y apellido son obligatorios.";
+    	    }
+    	    if (!Validador.esDniValido(dni)) {
+    	        return "ERROR: DNI inválido.";
+    	    }
+    	    if (!Validador.esEmailValido(email)) {
+    	        return "ERROR: Email inválido.";
+    	    }
+    	    if (!Validador.esTelefonoValido(telefono)) {
+    	        return "ERROR: Teléfono inválido.";
+    	    }
+    	    if (!Validador.esContraseniaValida(contrasenia)) {
+    	        return "ERROR: La contraseña debe tener al menos 8 caracteres, una letra y un número.";
+    	    }
+    	    if (!Validador.esValido(especialidad)) {
+    	        return "ERROR: La especialidad es obligatoria.";
+    	    }
 
         Profesional profesional = new Profesional();
         profesional.setNombre(nombre.trim());
@@ -104,6 +134,15 @@ public class UsuarioService {
     // Modificar
     
     public String modificarDatos(Usuario usuario) {
+    	if (!Validador.esValido(usuario.getNombre()) || !Validador.esValido(usuario.getApellido())) {
+            return "ERROR: Nombre y apellido son obligatorios.";
+        }
+        if (!Validador.esEmailValido(usuario.getEmail())) {
+            return "ERROR: Email inválido.";
+        }
+        if (!Validador.esTelefonoValido(usuario.getTelefono())) {
+            return "ERROR: Teléfono inválido.";
+        }
         boolean ok = repo.modificar(usuario);
         return ok ? "OK" : "ERROR: No se pudieron actualizar los datos.";
     }
@@ -118,7 +157,9 @@ public class UsuarioService {
         Usuario verificado = repo.login(u.getEmail(), contraseniaActual);
         if (verificado == null) return "ERROR: La contraseña actual es incorrecta.";
 
-        if (nuevaContrasenia.length() < 4) return "ERROR: La nueva contraseña debe tener al menos 4 caracteres.";
+        if (!Validador.esContraseniaValida(nuevaContrasenia)) {
+            return "ERROR: La nueva contraseña debe tener al menos 8 caracteres, una letra y un número.";
+        }
 
         boolean ok = repo.cambiarContrasenia(idUsuario, nuevaContrasenia);
         return ok ? "OK" : "ERROR: No se pudo cambiar la contraseña.";
