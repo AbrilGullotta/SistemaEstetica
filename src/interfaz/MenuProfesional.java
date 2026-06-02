@@ -7,6 +7,7 @@ import modelo.Turno;
 import modelo.Usuario;
 import repository.DisponibilidadRepository;
 import servicio.TurnoService;
+import util.Validador;
 
 public class MenuProfesional {
 
@@ -22,13 +23,15 @@ public class MenuProfesional {
         int opcion;
 
         do {
-            opcion = Integer.parseInt(JOptionPane.showInputDialog(
+            String inputOpcion = JOptionPane.showInputDialog(
                     "MENU PROFESIONAL - " + profesionalLogueado.getNombre() + "\n"
                     + "1. Cargar disponibilidad\n"
                     + "2. Ver mi disponibilidad\n"
                     + "3. Consultar turnos asignados\n"
                     + "0. Volver"
-            ));
+            );
+            if (inputOpcion == null) break;
+            opcion = Integer.parseInt(inputOpcion);
 
             switch (opcion) {
                 case 1:
@@ -55,11 +58,31 @@ public class MenuProfesional {
         String dia = JOptionPane.showInputDialog("Fecha (AAAA-MM-DD):");
         if (dia == null || dia.trim().isEmpty()) return;
 
+        if (!Validador.esFechaFutura(dia.trim())) {
+            JOptionPane.showMessageDialog(null, "La fecha debe ser hoy o en el futuro. Formato: AAAA-MM-DD.");
+            return;
+        }
+
         String horaInicio = JOptionPane.showInputDialog("Hora de inicio (HH:MM:SS):");
         if (horaInicio == null || horaInicio.trim().isEmpty()) return;
 
+        if (!horaInicio.trim().matches("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$")) {
+            JOptionPane.showMessageDialog(null, "Hora de inicio inválida. Formato: HH:MM:SS.");
+            return;
+        }
+
         String horaFin = JOptionPane.showInputDialog("Hora de fin (HH:MM:SS):");
         if (horaFin == null || horaFin.trim().isEmpty()) return;
+
+        if (!horaFin.trim().matches("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$")) {
+            JOptionPane.showMessageDialog(null, "Hora de fin inválida. Formato: HH:MM:SS.");
+            return;
+        }
+
+        if (horaFin.trim().compareTo(horaInicio.trim()) <= 0) {
+            JOptionPane.showMessageDialog(null, "La hora de fin debe ser posterior a la hora de inicio.");
+            return;
+        }
 
         Disponibilidad d = new Disponibilidad();
         d.setDia(dia.trim());

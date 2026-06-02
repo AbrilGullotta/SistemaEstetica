@@ -10,6 +10,7 @@ import servicio.ServicioService;
 import servicio.TurnoService;
 import servicio.UsuarioService;
 import servicio.SeniaService;
+import util.Validador;
 
 public class MenuCliente {
 
@@ -30,29 +31,33 @@ public class MenuCliente {
         int opcion;
 
         do {
-        	opcion = Integer.parseInt(JOptionPane.showInputDialog(
-        	        " MENU CLIENTE - " + clienteLogueado.getNombre() + "\n"
-        	        + "1. Reservar turno\n"
-        	        + "2. Consultar mis turnos\n"
-        	        + "3. Cancelar turno\n"
-        	        + "4. Ver servicios disponibles\n"
-        	        + "5. Ver profesionales\n"
-        	        + "6. Pagar seña\n"
-        	        + "7. Mi perfil\n"
-        	        + "8. Modificar mis datos\n"
-        	        + "0. Volver"
-        	));
+            String inputOpcion = JOptionPane.showInputDialog(
+                    " MENU CLIENTE - " + clienteLogueado.getNombre() + "\n"
+                    + "1. Reservar turno\n"
+                    + "2. Consultar mis turnos\n"
+                    + "3. Cancelar turno\n"
+                    + "4. Ver servicios disponibles\n"
+                    + "5. Ver profesionales\n"
+                    + "6. Pagar seña\n"
+                    + "7. Mi perfil\n"
+                    + "8. Modificar mis datos\n"
+                    + "0. Volver"
+            );
+            if (inputOpcion == null) break;
+            opcion = Integer.parseInt(inputOpcion);
 
             switch (opcion) {
-            case 1: reservarTurno(); break;
-            case 2: consultarTurnos(); break;
-            case 3: cancelarTurno(); break;
-            case 4: verServicios(); break;
-            case 5: verProfesionales(); break; 
-            case 6: pagarSenia(); break;
-            case 7: verPerfil(); break;
-            case 8: modificarPerfil(); break;
-      
+                case 1: reservarTurno();   break;
+                case 2: consultarTurnos(); break;
+                case 3: cancelarTurno();   break;
+                case 4: verServicios();    break;
+                case 5: verProfesionales(); break;
+                case 6: pagarSenia();      break;
+                case 7: verPerfil();       break;
+                case 8: modificarPerfil(); break;
+                case 0:
+                    JOptionPane.showMessageDialog(null, "Volviendo al menú principal");
+                    break;
                 default:
                     JOptionPane.showMessageDialog(null, "Opción inválida");
             }
@@ -77,7 +82,9 @@ public class MenuCliente {
                     + " - " + s.getDuracion() + "\n");
         }
 
-        int numServ = Integer.parseInt(JOptionPane.showInputDialog(sbServ.toString()));
+        String inputServ = JOptionPane.showInputDialog(sbServ.toString());
+        if (inputServ == null) return;
+        int numServ = Integer.parseInt(inputServ);
         if (numServ < 1 || numServ > servicios.size()) {
             JOptionPane.showMessageDialog(null, "Opción inválida.");
             return;
@@ -98,7 +105,9 @@ public class MenuCliente {
                     + " - " + p.getEspecialidad() + "\n");
         }
 
-        int numProf = Integer.parseInt(JOptionPane.showInputDialog(sbProf.toString()));
+        String inputProf = JOptionPane.showInputDialog(sbProf.toString());
+        if (inputProf == null) return;
+        int numProf = Integer.parseInt(inputProf);
         if (numProf < 1 || numProf > profesionales.size()) {
             JOptionPane.showMessageDialog(null, "Opción inválida.");
             return;
@@ -108,6 +117,11 @@ public class MenuCliente {
         // 3. Elegir fecha
         String fecha = JOptionPane.showInputDialog("Ingresá la fecha (AAAA-MM-DD):");
         if (fecha == null || fecha.trim().isEmpty()) return;
+
+        if (!Validador.esFechaFutura(fecha.trim())) {
+            JOptionPane.showMessageDialog(null, "La fecha debe ser hoy o en el futuro. Formato: AAAA-MM-DD.");
+            return;
+        }
 
         // 4. Mostrar horarios disponibles
         ArrayList<String> horarios = turnoService.obtenerHorariosDisponibles(
@@ -127,7 +141,9 @@ public class MenuCliente {
             sbHor.append((i + 1) + ". " + horarios.get(i) + "\n");
         }
 
-        int numHor = Integer.parseInt(JOptionPane.showInputDialog(sbHor.toString()));
+        String inputHor = JOptionPane.showInputDialog(sbHor.toString());
+        if (inputHor == null) return;
+        int numHor = Integer.parseInt(inputHor);
         if (numHor < 1 || numHor > horarios.size()) {
             JOptionPane.showMessageDialog(null, "Opción inválida.");
             return;
@@ -185,6 +201,7 @@ public class MenuCliente {
 
         JOptionPane.showMessageDialog(null, sb.toString());
     }
+
     private void verServicios() {
 
         ArrayList<Servicio> servicios = servicioService.listarServicios();
@@ -224,13 +241,13 @@ public class MenuCliente {
 
         JOptionPane.showMessageDialog(null, sb.toString());
     }
+
     private void cancelarTurno() {
 
         ArrayList<modelo.Turno> turnos = turnoService.listarTurnosPorCliente(
                 clienteLogueado.getIdUsuario()
         );
 
-        // Filtrar solo los cancelables
         ArrayList<modelo.Turno> cancelables = new ArrayList<>();
         for (modelo.Turno t : turnos) {
             if (t.getEstado().equals("RESERVADO") || t.getEstado().equals("CONFIRMADO")) {
@@ -253,7 +270,9 @@ public class MenuCliente {
         }
         sb.append("\nIngresá el número (0 para volver):");
 
-        int num = Integer.parseInt(JOptionPane.showInputDialog(sb.toString()));
+        String inputNum = JOptionPane.showInputDialog(sb.toString());
+        if (inputNum == null) return;
+        int num = Integer.parseInt(inputNum);
         if (num == 0 || num > cancelables.size()) return;
 
         modelo.Turno turnoElegido = cancelables.get(num - 1);
@@ -275,10 +294,9 @@ public class MenuCliente {
             }
         }
     }
-    
+
     private void pagarSenia() {
 
-        // Mostrar solo turnos reservados
         ArrayList<modelo.Turno> turnos = turnoService.listarTurnosPorCliente(
                 clienteLogueado.getIdUsuario()
         );
@@ -304,7 +322,9 @@ public class MenuCliente {
         }
         sb.append("\nIngresá el número (0 para volver):");
 
-        int num = Integer.parseInt(JOptionPane.showInputDialog(sb.toString()));
+        String inputNum = JOptionPane.showInputDialog(sb.toString());
+        if (inputNum == null) return;
+        int num = Integer.parseInt(inputNum);
         if (num == 0 || num > reservados.size()) return;
 
         modelo.Turno turnoElegido = reservados.get(num - 1);
@@ -335,6 +355,7 @@ public class MenuCliente {
             }
         }
     }
+
     private void verPerfil() {
 
         UsuarioService us = new UsuarioService();
@@ -366,26 +387,38 @@ public class MenuCliente {
         }
 
         String nuevoNombre   = JOptionPane.showInputDialog("Nombre:", u.getNombre());
-        if (nuevoNombre == null) return; // canceló
+        if (nuevoNombre == null) return;
 
         String nuevoApellido = JOptionPane.showInputDialog("Apellido:", u.getApellido());
         if (nuevoApellido == null) return;
 
-        String nuevoDni      = JOptionPane.showInputDialog("DNI:", u.getDni());
-        String nuevoTel      = JOptionPane.showInputDialog("Teléfono:", u.getTelefono());
-        String nuevaFnac     = JOptionPane.showInputDialog(
-                "Fecha de nacimiento (AAAA-MM-DD):", u.getFechaNacimiento());
+        String nuevoDni  = JOptionPane.showInputDialog("DNI:", u.getDni());
+        if (!Validador.esDniValido(nuevoDni)) {
+            JOptionPane.showMessageDialog(null, "DNI inválido. Debe tener 7 u 8 dígitos.");
+            return;
+        }
+
+        String nuevoTel = JOptionPane.showInputDialog("Teléfono:", u.getTelefono());
+        if (!Validador.esTelefonoValido(nuevoTel)) {
+            JOptionPane.showMessageDialog(null, "Teléfono inválido. Solo números, entre 8 y 15 dígitos.");
+            return;
+        }
+
+        String nuevaFnac = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):", u.getFechaNacimiento());
+        if (!Validador.esFechaValida(nuevaFnac)) {
+            JOptionPane.showMessageDialog(null, "Fecha inválida. Formato: AAAA-MM-DD.");
+            return;
+        }
 
         u.setNombre(nuevoNombre.trim());
         u.setApellido(nuevoApellido.trim());
-        u.setDni(nuevoDni != null ? nuevoDni.trim() : "");
-        u.setTelefono(nuevoTel != null ? nuevoTel.trim() : "");
-        u.setFechaNacimiento(nuevaFnac != null ? nuevaFnac.trim() : "");
+        u.setDni(nuevoDni.trim());
+        u.setTelefono(nuevoTel.trim());
+        u.setFechaNacimiento(nuevaFnac.trim());
 
         String resultado = us.modificarDatos(u);
 
         if ("OK".equals(resultado)) {
-            // Actualizar nombre en sesión para que el menú lo muestre correctamente
             clienteLogueado.setNombre(u.getNombre());
             clienteLogueado.setApellido(u.getApellido());
             JOptionPane.showMessageDialog(null, "Datos actualizados correctamente.");

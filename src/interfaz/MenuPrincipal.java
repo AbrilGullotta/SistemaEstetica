@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 import modelo.Usuario;
 import servicio.UsuarioService;
 import util.Validador;
+
 public class MenuPrincipal {
 
     private UsuarioService usuarioService = new UsuarioService();
@@ -12,12 +13,14 @@ public class MenuPrincipal {
         int opcion;
 
         do {
-            opcion = Integer.parseInt(JOptionPane.showInputDialog(
+            String inputOpcion = JOptionPane.showInputDialog(
                     " SISTEMA ESTÉTICA \n"
                     + "1. Iniciar sesión\n"
                     + "2. Registrarse\n"
                     + "0. Salir"
-            ));
+            );
+            if (inputOpcion == null) break;
+            opcion = Integer.parseInt(inputOpcion);
 
             switch (opcion) {
                 case 1:
@@ -38,7 +41,9 @@ public class MenuPrincipal {
 
     private void login() {
         String email      = JOptionPane.showInputDialog("Email:");
+        if (email == null) return;
         String contrasenia = JOptionPane.showInputDialog("Contraseña:");
+        if (contrasenia == null) return;
 
         Usuario usuario = usuarioService.iniciarSesion(email, contrasenia);
 
@@ -51,7 +56,7 @@ public class MenuPrincipal {
 
         switch (usuario.getRol()) {
             case "ADMIN":
-            	new MenuAdministrador().mostrarMenuAdministrador();
+                new MenuAdministrador().mostrarMenuAdministrador();
                 break;
             case "CLIENTE":
                 new MenuCliente(usuario).mostrarMenuCliente();
