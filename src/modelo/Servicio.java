@@ -38,4 +38,8 @@ public class Servicio {
     public void setDuracion(String duracion) {
         this.duracion = duracion;
     }
+    @Override
+    public String toString() {
+        return nombre + " - $" + precio + " - " + duracion;
+    }
 }

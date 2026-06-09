@@ -137,54 +137,13 @@ public class MenuAdministrador extends JFrame{
 
 	    ventana.setVisible(true);
 	}
-private void registrarProfesional() {
+	private void registrarProfesional() {
 
-    String nomProf = Validador.pedirCampoObligatorio("Nombre");
-    if (nomProf == null) return;
+	    VentanaRegistrarProfesionalAdmin ventana =
+	            new VentanaRegistrarProfesionalAdmin();
 
-    String apProf = Validador.pedirCampoObligatorio("Apellido");
-    if (apProf == null) return;
-
-    String dniProf = JOptionPane.showInputDialog("DNI:");
-    if (!Validador.esDniValido(dniProf)) {
-        JOptionPane.showMessageDialog(null, "DNI inválido. Debe tener 7 u 8 dígitos.");
-        return;
-    }
-
-    String emailProf = JOptionPane.showInputDialog("Email:");
-    if (!Validador.esEmailValido(emailProf)) {
-        JOptionPane.showMessageDialog(null, "Email inválido.");
-        return;
-    }
-
-    String telProf = JOptionPane.showInputDialog("Teléfono:");
-    if (!Validador.esTelefonoValido(telProf)) {
-        JOptionPane.showMessageDialog(null, "Teléfono inválido. Solo números, entre 8 y 15 dígitos.");
-        return;
-    }
-
-    String passProf = JOptionPane.showInputDialog("Contraseña:");
-    if (!Validador.esContraseniaValida(passProf)) {
-        JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 8 caracteres, una letra y un número.");
-        return;
-    }
-
-    String espec = JOptionPane.showInputDialog("Especialidad:");
-    if (!Validador.esValido(espec)) {
-        JOptionPane.showMessageDialog(null, "La especialidad es obligatoria.");
-        return;
-    }
-
-    UsuarioService us = new UsuarioService();
-    String resProf = us.registrarProfesional(
-            nomProf, apProf, dniProf, emailProf, telProf, passProf, espec);
-
-    if ("OK".equals(resProf)) {
-        JOptionPane.showMessageDialog(null, "Profesional registrado correctamente.");
-    } else {
-        JOptionPane.showMessageDialog(null, resProf);
-    }
-}
+	    ventana.setVisible(true);
+	}
 private void registrarServicio() {
 
     VentanaRegistrarServicioAdmin ventana =
