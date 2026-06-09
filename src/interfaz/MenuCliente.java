@@ -14,13 +14,27 @@ import util.Validador;
 import java.text.SimpleDateFormat;
 import javax.swing.JPanel;
 import com.toedter.calendar.JDateChooser;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
-public class MenuCliente {
+public class MenuCliente extends JFrame{
 
     private Cliente clienteLogueado;
     private TurnoService turnoService = new TurnoService();
     private ServicioService servicioService = new ServicioService();
     private UsuarioService usuarioService = new UsuarioService();
+    
+    private JLabel lblTitulo;
+    private JButton btnReservarTurno;
+    private JButton btnConsultarTurnos;
+    private JButton btnCancelarTurno;
+    private JButton btnVerServicios;
+    private JButton btnVerProfesionales;
+    private JButton btnPagarSenia;
+    private JButton btnVerPerfil;
+    private JButton btnModificarPerfil;
+    private JButton btnCerrar;
 
     public MenuCliente(Usuario usuario) {
         this.clienteLogueado = new Cliente();
@@ -28,44 +42,73 @@ public class MenuCliente {
         this.clienteLogueado.setNombre(usuario.getNombre());
         this.clienteLogueado.setApellido(usuario.getApellido());
         this.clienteLogueado.setEmail(usuario.getEmail());
+    inicializarVentana();
     }
+    
+    private void inicializarVentana() {
+        setTitle("Menú Cliente");
+        setLayout(null);
+        setBounds(400, 100, 430, 520);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        lblTitulo = new JLabel("MENÚ CLIENTE - " + clienteLogueado.getNombre());
+        lblTitulo.setBounds(120, 20, 250, 30);
+        add(lblTitulo);
+
+        btnReservarTurno = new JButton("Reservar turno");
+        btnReservarTurno.setBounds(110, 70, 200, 30);
+        add(btnReservarTurno);
+
+        btnConsultarTurnos = new JButton("Consultar mis turnos");
+        btnConsultarTurnos.setBounds(110, 110, 200, 30);
+        add(btnConsultarTurnos);
+
+        btnCancelarTurno = new JButton("Cancelar turno");
+        btnCancelarTurno.setBounds(110, 150, 200, 30);
+        add(btnCancelarTurno);
+
+        btnVerServicios = new JButton("Ver servicios disponibles");
+        btnVerServicios.setBounds(110, 190, 200, 30);
+        add(btnVerServicios);
+
+        btnVerProfesionales = new JButton("Ver profesionales");
+        btnVerProfesionales.setBounds(110, 230, 200, 30);
+        add(btnVerProfesionales);
+
+        btnPagarSenia = new JButton("Pagar seña");
+        btnPagarSenia.setBounds(110, 270, 200, 30);
+        add(btnPagarSenia);
+
+        btnVerPerfil = new JButton("Mi perfil");
+        btnVerPerfil.setBounds(110, 310, 200, 30);
+        add(btnVerPerfil);
+
+        btnModificarPerfil = new JButton("Modificar mis datos");
+        btnModificarPerfil.setBounds(110, 350, 200, 30);
+        add(btnModificarPerfil);
+
+        btnCerrar = new JButton("Cerrar sesión");
+        btnCerrar.setBounds(110, 400, 200, 30);
+        add(btnCerrar);
+
+        btnReservarTurno.addActionListener(e -> reservarTurno());
+        btnConsultarTurnos.addActionListener(e -> consultarTurnos());
+        btnCancelarTurno.addActionListener(e -> cancelarTurno());
+        btnVerServicios.addActionListener(e -> verServicios());
+        btnVerProfesionales.addActionListener(e -> verProfesionales());
+        btnPagarSenia.addActionListener(e -> pagarSenia());
+        btnVerPerfil.addActionListener(e -> verPerfil());
+        btnModificarPerfil.addActionListener(e -> modificarPerfil());
+        btnCerrar.addActionListener(e -> {
+            dispose();
+            MenuPrincipal menu = new MenuPrincipal();
+            menu.setVisible(true);
+        });
+    }
+    
     public void mostrarMenuCliente() {
-        int opcion;
-
-        do {
-            String inputOpcion = JOptionPane.showInputDialog(
-                    " MENU CLIENTE - " + clienteLogueado.getNombre() + "\n"
-                    + "1. Reservar turno\n"
-                    + "2. Consultar mis turnos\n"
-                    + "3. Cancelar turno\n"
-                    + "4. Ver servicios disponibles\n"
-                    + "5. Ver profesionales\n"
-                    + "6. Pagar seña\n"
-                    + "7. Mi perfil\n"
-                    + "8. Modificar mis datos\n"
-                    + "0. Volver"
-            );
-            if (inputOpcion == null) break;
-            opcion = Integer.parseInt(inputOpcion);
-
-            switch (opcion) {
-                case 1: reservarTurno();   break;
-                case 2: consultarTurnos(); break;
-                case 3: cancelarTurno();   break;
-                case 4: verServicios();    break;
-                case 5: verProfesionales(); break;
-                case 6: pagarSenia();      break;
-                case 7: verPerfil();       break;
-                case 8: modificarPerfil(); break;
-                case 0:
-                    JOptionPane.showMessageDialog(null, "Volviendo al menú principal");
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(null, "Opción inválida");
-            }
-
-        } while (opcion != 0);
+        setVisible(true);
     }
 
     private void reservarTurno() {
