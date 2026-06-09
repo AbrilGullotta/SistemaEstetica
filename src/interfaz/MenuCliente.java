@@ -372,71 +372,28 @@ public class MenuCliente extends JFrame{
     private void verPerfil() {
 
         UsuarioService us = new UsuarioService();
-        modelo.Usuario u = us.buscarPorId(clienteLogueado.getIdUsuario());
+        Usuario u = us.buscarPorId(clienteLogueado.getIdUsuario());
 
         if (u == null) {
             JOptionPane.showMessageDialog(null, "No se pudo obtener la información del perfil.");
             return;
         }
 
-        JOptionPane.showMessageDialog(null,
-                "MI PERFIL\n\n"
-                + "Nombre: " + u.getNombre() + " " + u.getApellido() + "\n"
-                + "DNI: " + (u.getDni() != null ? u.getDni() : "-") + "\n"
-                + "Email: " + u.getEmail() + "\n"
-                + "Teléfono: " + (u.getTelefono() != null ? u.getTelefono() : "-") + "\n"
-                + "Fecha de nacimiento: " + (u.getFechaNacimiento() != null ? u.getFechaNacimiento() : "-")
-        );
+        VentanaPerfilCliente ventana = new VentanaPerfilCliente(u, false);
+        ventana.setVisible(true);
     }
 
     private void modificarPerfil() {
 
         UsuarioService us = new UsuarioService();
-        modelo.Usuario u = us.buscarPorId(clienteLogueado.getIdUsuario());
+        Usuario u = us.buscarPorId(clienteLogueado.getIdUsuario());
 
         if (u == null) {
             JOptionPane.showMessageDialog(null, "No se pudo obtener la información del perfil.");
             return;
         }
 
-        String nuevoNombre   = JOptionPane.showInputDialog("Nombre:", u.getNombre());
-        if (nuevoNombre == null) return;
-
-        String nuevoApellido = JOptionPane.showInputDialog("Apellido:", u.getApellido());
-        if (nuevoApellido == null) return;
-
-        String nuevoDni  = JOptionPane.showInputDialog("DNI:", u.getDni());
-        if (!Validador.esDniValido(nuevoDni)) {
-            JOptionPane.showMessageDialog(null, "DNI inválido. Debe tener 7 u 8 dígitos.");
-            return;
-        }
-
-        String nuevoTel = JOptionPane.showInputDialog("Teléfono:", u.getTelefono());
-        if (!Validador.esTelefonoValido(nuevoTel)) {
-            JOptionPane.showMessageDialog(null, "Teléfono inválido. Solo números, entre 8 y 15 dígitos.");
-            return;
-        }
-
-        String nuevaFnac = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):", u.getFechaNacimiento());
-        if (!Validador.esFechaValida(nuevaFnac)) {
-            JOptionPane.showMessageDialog(null, "Fecha inválida. Formato: AAAA-MM-DD.");
-            return;
-        }
-
-        u.setNombre(nuevoNombre.trim());
-        u.setApellido(nuevoApellido.trim());
-        u.setDni(nuevoDni.trim());
-        u.setTelefono(nuevoTel.trim());
-        u.setFechaNacimiento(nuevaFnac.trim());
-
-        String resultado = us.modificarDatos(u);
-
-        if ("OK".equals(resultado)) {
-            clienteLogueado.setNombre(u.getNombre());
-            clienteLogueado.setApellido(u.getApellido());
-            JOptionPane.showMessageDialog(null, "Datos actualizados correctamente.");
-        } else {
-            JOptionPane.showMessageDialog(null, resultado);
-        }
+        VentanaPerfilCliente ventana = new VentanaPerfilCliente(u, true);
+        ventana.setVisible(true);
     }
 }
