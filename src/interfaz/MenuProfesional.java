@@ -13,6 +13,11 @@ import modelo.Usuario;
 import repository.DisponibilidadRepository;
 import servicio.TurnoService;
 import util.Validador;
+import java.text.SimpleDateFormat;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import com.toedter.calendar.JDateChooser;
 
 public class MenuProfesional extends JFrame{
 
@@ -36,39 +41,73 @@ public class MenuProfesional extends JFrame{
 
     private void cargarDisponibilidad() {
 
-        String dia = JOptionPane.showInputDialog("Fecha (AAAA-MM-DD):");
-        if (dia == null || dia.trim().isEmpty()) return;
+        JDateChooser dateChooser = new JDateChooser();
+        dateChooser.setDateFormatString("yyyy-MM-dd");
 
-        if (!Validador.esFechaFutura(dia.trim())) {
-            JOptionPane.showMessageDialog(null, "La fecha debe ser hoy o en el futuro. Formato: AAAA-MM-DD.");
+        JSpinner spinnerHoraInicio = new JSpinner(
+                new SpinnerNumberModel(9, 0, 23, 1)
+        );
+
+        JSpinner spinnerMinutoInicio = new JSpinner(
+                new SpinnerNumberModel(0, 0, 59, 15)
+        );
+
+        JSpinner spinnerHoraFin = new JSpinner(
+                new SpinnerNumberModel(18, 0, 23, 1)
+        );
+
+        JSpinner spinnerMinutoFin = new JSpinner(
+                new SpinnerNumberModel(0, 0, 59, 15)
+        );
+
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Fecha:"));
+        panel.add(dateChooser);
+        panel.add(new JLabel("Inicio:"));
+        panel.add(spinnerHoraInicio);
+        panel.add(new JLabel(":"));
+        panel.add(spinnerMinutoInicio);
+        panel.add(new JLabel("Fin:"));
+        panel.add(spinnerHoraFin);
+        panel.add(new JLabel(":"));
+        panel.add(spinnerMinutoFin);
+
+        int resultado = JOptionPane.showConfirmDialog(
+                null,
+                panel,
+                "Cargar disponibilidad",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+
+        if (resultado != JOptionPane.OK_OPTION || dateChooser.getDate() == null) {
             return;
         }
 
-        String horaInicio = JOptionPane.showInputDialog("Hora de inicio (HH:MM:SS):");
-        if (horaInicio == null || horaInicio.trim().isEmpty()) return;
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+        String dia = formato.format(dateChooser.getDate());
 
-        if (!horaInicio.trim().matches("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$")) {
-            JOptionPane.showMessageDialog(null, "Hora de inicio inválida. Formato: HH:MM:SS.");
+        if (!Validador.esFechaFutura(dia)) {
+            JOptionPane.showMessageDialog(null, "La fecha debe ser hoy o en el futuro.");
             return;
         }
 
-        String horaFin = JOptionPane.showInputDialog("Hora de fin (HH:MM:SS):");
-        if (horaFin == null || horaFin.trim().isEmpty()) return;
+        int hInicio = (int) spinnerHoraInicio.getValue();
+        int mInicio = (int) spinnerMinutoInicio.getValue();
+        int hFin = (int) spinnerHoraFin.getValue();
+        int mFin = (int) spinnerMinutoFin.getValue();
 
-        if (!horaFin.trim().matches("^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$")) {
-            JOptionPane.showMessageDialog(null, "Hora de fin inválida. Formato: HH:MM:SS.");
-            return;
-        }
+        String horaInicio = String.format("%02d:%02d:00", hInicio, mInicio);
+        String horaFin = String.format("%02d:%02d:00", hFin, mFin);
 
-        if (horaFin.trim().compareTo(horaInicio.trim()) <= 0) {
+        if (horaFin.compareTo(horaInicio) <= 0) {
             JOptionPane.showMessageDialog(null, "La hora de fin debe ser posterior a la hora de inicio.");
             return;
         }
 
         Disponibilidad d = new Disponibilidad();
-        d.setDia(dia.trim());
-        d.setHoraInicio(horaInicio.trim());
-        d.setHoraFin(horaFin.trim());
+        d.setDia(dia);
+        d.setHoraInicio(horaInicio);
+        d.setHoraFin(horaFin);
         d.setIdProfesional(profesionalLogueado.getIdUsuario());
 
         boolean ok = dispRepo.guardar(d);
@@ -79,7 +118,6 @@ public class MenuProfesional extends JFrame{
             JOptionPane.showMessageDialog(null, "Error al cargar disponibilidad.");
         }
     }
-
     private void verDisponibilidad() {
 
         ArrayList<Disponibilidad> lista = dispRepo.listarPorProfesional(
