@@ -281,25 +281,20 @@ public class MenuCliente extends JFrame{
             return;
         }
 
-        StringBuilder sb = new StringBuilder("Profesionales disponibles:\n\n");
-        for (Profesional p : profesionales) {
-            sb.append("• " + p.getNombre() + " " + p.getApellido() + "\n");
-            sb.append("  Especialidad: " + p.getEspecialidad() + "\n");
-            sb.append("  Teléfono: " + p.getTelefono() + "\n");
-            sb.append("-----------------------------\n");
-        }
+        VentanaProfesionalesCliente ventana =
+                new VentanaProfesionalesCliente(profesionales);
 
-        JOptionPane.showMessageDialog(null, sb.toString());
+        ventana.setVisible(true);
     }
-
     private void cancelarTurno() {
 
-        ArrayList<modelo.Turno> turnos = turnoService.listarTurnosPorCliente(
+        ArrayList<Turno> turnos = turnoService.listarTurnosPorCliente(
                 clienteLogueado.getIdUsuario()
         );
 
-        ArrayList<modelo.Turno> cancelables = new ArrayList<>();
-        for (modelo.Turno t : turnos) {
+        ArrayList<Turno> cancelables = new ArrayList<>();
+
+        for (Turno t : turnos) {
             if (t.getEstado().equals("RESERVADO") || t.getEstado().equals("CONFIRMADO")) {
                 cancelables.add(t);
             }
@@ -310,41 +305,9 @@ public class MenuCliente extends JFrame{
             return;
         }
 
-        StringBuilder sb = new StringBuilder("¿Cuál turno querés cancelar?\n\n");
-        for (int i = 0; i < cancelables.size(); i++) {
-            modelo.Turno t = cancelables.get(i);
-            sb.append((i + 1) + ". " + t.getFecha() + " " + t.getHora()
-                    + " | " + t.getServicio().getNombre()
-                    + " | " + t.getProfesional().getNombre() + " " + t.getProfesional().getApellido()
-                    + "\n");
-        }
-        sb.append("\nIngresá el número (0 para volver):");
-
-        String inputNum = JOptionPane.showInputDialog(sb.toString());
-        if (inputNum == null) return;
-        int num = Integer.parseInt(inputNum);
-        if (num == 0 || num > cancelables.size()) return;
-
-        modelo.Turno turnoElegido = cancelables.get(num - 1);
-
-        int confirmar = JOptionPane.showConfirmDialog(null,
-                "¿Confirmás la cancelación del turno?\n"
-                + turnoElegido.getFecha() + " " + turnoElegido.getHora()
-                + " - " + turnoElegido.getServicio().getNombre(),
-                "Confirmar cancelación",
-                JOptionPane.YES_NO_OPTION
-        );
-
-        if (confirmar == JOptionPane.YES_OPTION) {
-            String resultado = turnoService.cancelarTurno(turnoElegido.getIdTurno());
-            if ("OK".equals(resultado)) {
-                JOptionPane.showMessageDialog(null, "Turno cancelado correctamente.");
-            } else {
-                JOptionPane.showMessageDialog(null, resultado);
-            }
-        }
+        VentanaMisTurnosCliente ventana = new VentanaMisTurnosCliente(cancelables);
+        ventana.setVisible(true);
     }
-
     private void pagarSenia() {
 
         ArrayList<modelo.Turno> turnos = turnoService.listarTurnosPorCliente(
