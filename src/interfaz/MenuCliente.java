@@ -17,6 +17,7 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import modelo.Turno;
 
 public class MenuCliente extends JFrame{
 
@@ -243,7 +244,7 @@ public class MenuCliente extends JFrame{
 
     private void consultarTurnos() {
 
-        ArrayList<modelo.Turno> turnos = turnoService.listarTurnosPorCliente(
+        ArrayList<Turno> turnos = turnoService.listarTurnosPorCliente(
                 clienteLogueado.getIdUsuario()
         );
 
@@ -252,17 +253,10 @@ public class MenuCliente extends JFrame{
             return;
         }
 
-        StringBuilder sb = new StringBuilder("Tus turnos:\n\n");
-        for (modelo.Turno t : turnos) {
-            sb.append("Fecha: " + t.getFecha() + " " + t.getHora() + "\n");
-            sb.append("Servicio: " + t.getServicio().getNombre() + "\n");
-            sb.append("Profesional: " + t.getProfesional().getNombre()
-                    + " " + t.getProfesional().getApellido() + "\n");
-            sb.append("Estado: " + t.getEstado() + "\n");
-            sb.append("-----------------------------\n");
-        }
+        VentanaMisTurnosCliente ventana =
+                new VentanaMisTurnosCliente(turnos);
 
-        JOptionPane.showMessageDialog(null, sb.toString());
+        ventana.setVisible(true);
     }
 
     private void verServicios() {
