@@ -251,16 +251,8 @@ private void verClientes() {
         return;
     }
 
-    StringBuilder sbCli = new StringBuilder("CLIENTES REGISTRADOS\n\n");
-    for (modelo.Cliente c : clientes) {
-        sbCli.append("• " + c.getNombre() + " " + c.getApellido() + "\n");
-        sbCli.append("  DNI: " + c.getDni() + "\n");
-        sbCli.append("  Email: " + c.getEmail() + "\n");
-        sbCli.append("  Tel: " + c.getTelefono() + "\n");
-        sbCli.append("-----------------------------\n");
-    }
-
-    JOptionPane.showMessageDialog(null, sbCli.toString());
+    VentanaClientesAdmin ventana = new VentanaClientesAdmin(clientes);
+    ventana.setVisible(true);
 }
 private void verProfesionales() {
 
@@ -272,36 +264,23 @@ private void verProfesionales() {
         return;
     }
 
-    StringBuilder sbProfs = new StringBuilder("PROFESIONALES REGISTRADOS\n\n");
-    for (modelo.Profesional p : profs) {
-        sbProfs.append("• " + p.getNombre() + " " + p.getApellido() + "\n");
-        sbProfs.append("  Especialidad: " + p.getEspecialidad() + "\n");
-        sbProfs.append("  Email: " + p.getEmail() + "\n");
-        sbProfs.append("  Tel: " + p.getTelefono() + "\n");
-        sbProfs.append("-----------------------------\n");
-    }
-
-    JOptionPane.showMessageDialog(null, sbProfs.toString());
+    VentanaProfesionalesAdmin ventana = new VentanaProfesionalesAdmin(profs);
+    ventana.setVisible(true);
 }
 private void verServicios() {
 
     ServicioService ssVer = new ServicioService();
-    ArrayList<modelo.Servicio> servs = ssVer.listarServicios();
+    ArrayList<modelo.Servicio> servicios = ssVer.listarServicios();
 
-    if (servs.isEmpty()) {
+    if (servicios.isEmpty()) {
         JOptionPane.showMessageDialog(null, "No hay servicios registrados.");
         return;
     }
 
-    StringBuilder sbServs = new StringBuilder("SERVICIOS REGISTRADOS\n\n");
-    for (modelo.Servicio s : servs) {
-        sbServs.append("• " + s.getNombre() + "\n");
-        sbServs.append("  Precio: $" + s.getPrecio() + "\n");
-        sbServs.append("  Duración: " + s.getDuracion() + "\n");
-        sbServs.append("-----------------------------\n");
-    }
+    VentanaServiciosAdmin ventana =
+            new VentanaServiciosAdmin(servicios);
 
-    JOptionPane.showMessageDialog(null, sbServs.toString());
+    ventana.setVisible(true);
 }
 private void verTurnos() {
 
@@ -312,20 +291,8 @@ private void verTurnos() {
         return;
     }
 
-    String mensaje = "TURNOS REGISTRADOS\n\n";
-
-    for (Turno turno : turnos) {
-        mensaje += "ID: " + turno.getIdTurno() + "\n";
-        mensaje += "Cliente: " + turno.getCliente().getNombre() + " " + turno.getCliente().getApellido() + "\n";
-        mensaje += "Profesional: " + turno.getProfesional().getNombre() + " " + turno.getProfesional().getApellido() + "\n";
-        mensaje += "Servicio: " + turno.getServicio().getNombre() + "\n";
-        mensaje += "Fecha: " + turno.getFecha() + "\n";
-        mensaje += "Hora: " + turno.getHora() + "\n";
-        mensaje += "Estado: " + turno.getEstado() + "\n";
-        mensaje += "-------------------------\n";
-    }
-
-    JOptionPane.showMessageDialog(null, mensaje);
+    VentanaTurnosAdmin ventana = new VentanaTurnosAdmin(turnos);
+    ventana.setVisible(true);
 }
 private void buscarCliente() {
 
@@ -337,7 +304,8 @@ private void buscarCliente() {
     }
 
     UsuarioService usBuscar = new UsuarioService();
-    ArrayList<modelo.Cliente> clientesEncontrados = usBuscar.buscarClientes(criterio);
+    ArrayList<modelo.Cliente> clientesEncontrados =
+            usBuscar.buscarClientes(criterio.trim());
 
     if (clientesEncontrados.isEmpty()) {
         JOptionPane.showMessageDialog(null,
@@ -345,85 +313,22 @@ private void buscarCliente() {
         return;
     }
 
-    StringBuilder sbBusq = new StringBuilder(
-            "Resultados para \"" + criterio + "\":\n\n");
+    VentanaClientesAdmin ventana =
+            new VentanaClientesAdmin(clientesEncontrados);
 
-    for (modelo.Cliente c : clientesEncontrados) {
-        sbBusq.append("• " + c.getNombre() + " " + c.getApellido() + "\n");
-        sbBusq.append("  DNI: " + c.getDni() + "\n");
-        sbBusq.append("  Email: " + c.getEmail() + "\n");
-        sbBusq.append("  Tel: " + c.getTelefono() + "\n");
-        sbBusq.append("-----------------------------\n");
-    }
-
-    JOptionPane.showMessageDialog(null, sbBusq.toString());
+    ventana.setVisible(true);
 }
 private void gestionarTurnos() {
 
-    ArrayList<Turno> todosLosTurnos = turnoService.listarTurnos();
+    ArrayList<Turno> turnos = turnoService.listarTurnos();
 
-    if (todosLosTurnos.isEmpty()) {
+    if (turnos.isEmpty()) {
         JOptionPane.showMessageDialog(null, "No hay turnos registrados.");
         return;
     }
 
-    StringBuilder sbGestion = new StringBuilder("GESTIONAR TURNOS\n\n");
-
-    for (int i = 0; i < todosLosTurnos.size(); i++) {
-        Turno t = todosLosTurnos.get(i);
-        sbGestion.append((i + 1) + ". " + t.getFecha() + " " + t.getHora()
-                + " | " + t.getCliente().getNombre() + " " + t.getCliente().getApellido()
-                + " | " + t.getServicio().getNombre()
-                + " | Estado: " + t.getEstado() + "\n");
-    }
-
-    sbGestion.append("\nIngresá el número del turno a gestionar (0 para cancelar):");
-
-    String inputGestion = JOptionPane.showInputDialog(sbGestion.toString());
-    if (inputGestion == null) return;
-
-    int numTurno = Integer.parseInt(inputGestion);
-    if (numTurno == 0 || numTurno > todosLosTurnos.size()) return;
-
-    Turno turnoElegido = todosLosTurnos.get(numTurno - 1);
-
-    String accion = JOptionPane.showInputDialog(
-            "Turno seleccionado:\n"
-            + "Cliente: " + turnoElegido.getCliente().getNombre() + " " + turnoElegido.getCliente().getApellido() + "\n"
-            + "Fecha: " + turnoElegido.getFecha() + " " + turnoElegido.getHora() + "\n"
-            + "Estado actual: " + turnoElegido.getEstado() + "\n\n"
-            + "Nuevo estado:\n"
-            + "1. CONFIRMADO\n"
-            + "2. CANCELADO\n"
-            + "3. COMPLETADO\n"
-            + "0. Volver"
-    );
-
-    if (accion == null) return;
-
-    String nuevoEstado = null;
-
-    switch (accion) {
-        case "1":
-            nuevoEstado = "CONFIRMADO";
-            break;
-        case "2":
-            nuevoEstado = "CANCELADO";
-            break;
-        case "3":
-            nuevoEstado = "COMPLETADO";
-            break;
-        default:
-            return;
-    }
-
-    String resEstado = turnoService.cambiarEstado(turnoElegido.getIdTurno(), nuevoEstado);
-
-    if ("OK".equals(resEstado)) {
-        JOptionPane.showMessageDialog(null, "Estado actualizado a: " + nuevoEstado);
-    } else {
-        JOptionPane.showMessageDialog(null, resEstado);
-    }
+    VentanaTurnosAdmin ventana = new VentanaTurnosAdmin(turnos);
+    ventana.setVisible(true);
 }
 private void registrarSenia() {
 
@@ -490,67 +395,17 @@ private void registrarSenia() {
 private void modificarCliente() {
 
     UsuarioService usModif = new UsuarioService();
-    ArrayList<modelo.Cliente> clientesModif = usModif.listarClientes();
+    ArrayList<modelo.Cliente> clientes = usModif.listarClientes();
 
-    if (clientesModif.isEmpty()) {
+    if (clientes.isEmpty()) {
         JOptionPane.showMessageDialog(null, "No hay clientes registrados.");
         return;
     }
 
-    StringBuilder sbModif = new StringBuilder("Seleccioná el cliente a modificar:\n\n");
+    VentanaModificarClienteAdmin ventana =
+            new VentanaModificarClienteAdmin(clientes);
 
-    for (int i = 0; i < clientesModif.size(); i++) {
-        modelo.Cliente c = clientesModif.get(i);
-        sbModif.append((i + 1) + ". " + c.getNombre() + " " + c.getApellido()
-                + " | " + c.getEmail() + "\n");
-    }
-
-    sbModif.append("\nIngresá el número (0 para cancelar):");
-
-    String inputModif = JOptionPane.showInputDialog(sbModif.toString());
-    if (inputModif == null) return;
-
-    int numModif = Integer.parseInt(inputModif);
-    if (numModif == 0 || numModif > clientesModif.size()) return;
-
-    modelo.Cliente clienteAModif = clientesModif.get(numModif - 1);
-
-    String nuevoNombre = JOptionPane.showInputDialog("Nombre:", clienteAModif.getNombre());
-    String nuevoApellido = JOptionPane.showInputDialog("Apellido:", clienteAModif.getApellido());
-    String nuevoDni = JOptionPane.showInputDialog("DNI:", clienteAModif.getDni());
-    String nuevoTel = JOptionPane.showInputDialog("Teléfono:", clienteAModif.getTelefono());
-    String nuevaFnac = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):", clienteAModif.getFechaNacimiento());
-
-    if (nuevoNombre == null || nuevoApellido == null) return;
-
-    if (!Validador.esDniValido(nuevoDni)) {
-        JOptionPane.showMessageDialog(null, "DNI inválido. Debe tener 7 u 8 dígitos.");
-        return;
-    }
-
-    if (!Validador.esTelefonoValido(nuevoTel)) {
-        JOptionPane.showMessageDialog(null, "Teléfono inválido. Solo números, entre 8 y 15 dígitos.");
-        return;
-    }
-
-    if (!Validador.esFechaValida(nuevaFnac)) {
-        JOptionPane.showMessageDialog(null, "Fecha inválida. Formato: AAAA-MM-DD.");
-        return;
-    }
-
-    clienteAModif.setNombre(nuevoNombre.trim());
-    clienteAModif.setApellido(nuevoApellido.trim());
-    clienteAModif.setDni(nuevoDni.trim());
-    clienteAModif.setTelefono(nuevoTel.trim());
-    clienteAModif.setFechaNacimiento(nuevaFnac.trim());
-
-    String resModif = usModif.modificarDatos(clienteAModif);
-
-    if ("OK".equals(resModif)) {
-        JOptionPane.showMessageDialog(null, "Cliente modificado correctamente.");
-    } else {
-        JOptionPane.showMessageDialog(null, resModif);
-    }
+    ventana.setVisible(true);
 }
 private void modificarTurno() {
 
@@ -685,65 +540,16 @@ private void modificarTurno() {
 private void modificarServicio() {
 
     ServicioService ssModifServ = new ServicioService();
-    ArrayList<modelo.Servicio> serviciosEdit = ssModifServ.listarServicios();
+    ArrayList<modelo.Servicio> servicios = ssModifServ.listarServicios();
 
-    if (serviciosEdit.isEmpty()) {
+    if (servicios.isEmpty()) {
         JOptionPane.showMessageDialog(null, "No hay servicios registrados.");
         return;
     }
 
-    StringBuilder sbServEdit = new StringBuilder("Seleccioná el servicio a modificar:\n\n");
+    VentanaModificarServicioAdmin ventana =
+            new VentanaModificarServicioAdmin(servicios);
 
-    for (int i = 0; i < serviciosEdit.size(); i++) {
-        modelo.Servicio s = serviciosEdit.get(i);
-        sbServEdit.append((i + 1) + ". " + s.getNombre()
-                + " | $" + s.getPrecio()
-                + " | " + s.getDuracion() + "\n");
-    }
-
-    sbServEdit.append("\nIngresá el número (0 para cancelar):");
-
-    String inputServEdit = JOptionPane.showInputDialog(sbServEdit.toString());
-    if (inputServEdit == null) return;
-
-    int numServEdit = Integer.parseInt(inputServEdit);
-    if (numServEdit == 0 || numServEdit > serviciosEdit.size()) return;
-
-    modelo.Servicio servicioAEditar = serviciosEdit.get(numServEdit - 1);
-
-    String nuevoNombreServ = JOptionPane.showInputDialog("Nombre:", servicioAEditar.getNombre());
-    if (nuevoNombreServ == null) return;
-
-    String nuevoPrecioStr = JOptionPane.showInputDialog("Precio:", servicioAEditar.getPrecio());
-    if (nuevoPrecioStr == null) return;
-
-    String nuevaDuracion = JOptionPane.showInputDialog("Duración (HH:MM:SS):", servicioAEditar.getDuracion());
-    if (nuevaDuracion == null) return;
-
-    double nuevoPrecio;
-
-    try {
-        nuevoPrecio = Double.parseDouble(nuevoPrecioStr.replace(",", "."));
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(null, "ERROR: El precio debe ser un número válido.");
-        return;
-    }
-
-    if (!Validador.esValido(nuevoNombreServ)) {
-        JOptionPane.showMessageDialog(null, "El nombre del servicio es obligatorio.");
-        return;
-    }
-
-    servicioAEditar.setNombre(nuevoNombreServ.trim());
-    servicioAEditar.setPrecio(nuevoPrecio);
-    servicioAEditar.setDuracion(nuevaDuracion.trim());
-
-    String resServEdit = ssModifServ.modificarServicio(servicioAEditar);
-
-    if ("OK".equals(resServEdit)) {
-        JOptionPane.showMessageDialog(null, "Servicio modificado correctamente.");
-    } else {
-        JOptionPane.showMessageDialog(null, resServEdit);
-    }
+    ventana.setVisible(true);
 }
 }
