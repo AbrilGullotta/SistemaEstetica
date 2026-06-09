@@ -274,15 +274,8 @@ public class MenuCliente extends JFrame{
             return;
         }
 
-        StringBuilder sb = new StringBuilder("Servicios disponibles:\n\n");
-        for (Servicio s : servicios) {
-            sb.append("• " + s.getNombre() + "\n");
-            sb.append("  Precio: $" + s.getPrecio() + "\n");
-            sb.append("  Duración: " + s.getDuracion() + "\n");
-            sb.append("-----------------------------\n");
-        }
-
-        JOptionPane.showMessageDialog(null, sb.toString());
+        VentanaServiciosCliente ventana = new VentanaServiciosCliente(servicios);
+        ventana.setVisible(true);
     }
 
     private void verProfesionales() {
