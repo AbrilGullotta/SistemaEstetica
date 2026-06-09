@@ -1,7 +1,12 @@
 package interfaz;
 
 import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+
 import modelo.Disponibilidad;
 import modelo.Turno;
 import modelo.Usuario;
@@ -9,48 +14,24 @@ import repository.DisponibilidadRepository;
 import servicio.TurnoService;
 import util.Validador;
 
-public class MenuProfesional {
+public class MenuProfesional extends JFrame{
 
     private Usuario profesionalLogueado;
     private DisponibilidadRepository dispRepo = new DisponibilidadRepository();
     private TurnoService turnoService = new TurnoService();
-
+    private JLabel lblTitulo;
+    private JButton btnCargarDisponibilidad;
+    private JButton btnVerDisponibilidad;
+    private JButton btnConsultarTurnos;
+    private JButton btnCerrar;
+    
     public MenuProfesional(Usuario usuario) {
         this.profesionalLogueado = usuario;
+        inicializarVentana();
     }
 
     public void mostrarMenuProfesional() {
-        int opcion;
-
-        do {
-            String inputOpcion = JOptionPane.showInputDialog(
-                    "MENU PROFESIONAL - " + profesionalLogueado.getNombre() + "\n"
-                    + "1. Cargar disponibilidad\n"
-                    + "2. Ver mi disponibilidad\n"
-                    + "3. Consultar turnos asignados\n"
-                    + "0. Volver"
-            );
-            if (inputOpcion == null) break;
-            opcion = Integer.parseInt(inputOpcion);
-
-            switch (opcion) {
-                case 1:
-                    cargarDisponibilidad();
-                    break;
-                case 2:
-                    verDisponibilidad();
-                    break;
-                case 3:
-                    consultarTurnos();
-                    break;
-                case 0:
-                    JOptionPane.showMessageDialog(null, "Volviendo al menú principal");
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(null, "Opción inválida");
-            }
-
-        } while (opcion != 0);
+        setVisible(true);
     }
 
     private void cargarDisponibilidad() {
@@ -142,5 +123,42 @@ public class MenuProfesional {
         }
 
         JOptionPane.showMessageDialog(null, sb.toString());
+    }
+    private void inicializarVentana() {
+        setTitle("Menú Profesional");
+        setLayout(null);
+        setBounds(400, 120, 430, 350);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        lblTitulo = new JLabel("MENÚ PROFESIONAL - " + profesionalLogueado.getNombre());
+        lblTitulo.setBounds(90, 25, 300, 30);
+        add(lblTitulo);
+
+        btnCargarDisponibilidad = new JButton("Cargar disponibilidad");
+        btnCargarDisponibilidad.setBounds(105, 80, 220, 30);
+        add(btnCargarDisponibilidad);
+
+        btnVerDisponibilidad = new JButton("Ver mi disponibilidad");
+        btnVerDisponibilidad.setBounds(105, 125, 220, 30);
+        add(btnVerDisponibilidad);
+
+        btnConsultarTurnos = new JButton("Consultar turnos asignados");
+        btnConsultarTurnos.setBounds(105, 170, 220, 30);
+        add(btnConsultarTurnos);
+
+        btnCerrar = new JButton("Cerrar sesión");
+        btnCerrar.setBounds(105, 230, 220, 30);
+        add(btnCerrar);
+
+        btnCargarDisponibilidad.addActionListener(e -> cargarDisponibilidad());
+        btnVerDisponibilidad.addActionListener(e -> verDisponibilidad());
+        btnConsultarTurnos.addActionListener(e -> consultarTurnos());
+
+        btnCerrar.addActionListener(e -> {
+            dispose();
+            MenuPrincipal menu = new MenuPrincipal();
+            menu.setVisible(true);
+        });
     }
 }
