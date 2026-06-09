@@ -108,17 +108,8 @@ public class MenuProfesional extends JFrame{
             return;
         }
 
-        StringBuilder sb = new StringBuilder("Tus turnos asignados:\n\n");
-        for (Turno t : turnos) {
-            sb.append("Fecha: " + t.getFecha() + " " + t.getHora() + "\n");
-            sb.append("Cliente: " + t.getCliente().getNombre()
-                    + " " + t.getCliente().getApellido() + "\n");
-            sb.append("Servicio: " + t.getServicio().getNombre() + "\n");
-            sb.append("Estado: " + t.getEstado() + "\n");
-            sb.append("-----------------------------\n");
-        }
-
-        JOptionPane.showMessageDialog(null, sb.toString());
+        VentanaTurnosProfesional ventana = new VentanaTurnosProfesional(turnos);
+        ventana.setVisible(true);
     }
     private void inicializarVentana() {
         setTitle("Menú Profesional");
