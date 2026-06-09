@@ -11,6 +11,9 @@ import servicio.TurnoService;
 import servicio.UsuarioService;
 import servicio.SeniaService;
 import util.Validador;
+import java.text.SimpleDateFormat;
+import javax.swing.JPanel;
+import com.toedter.calendar.JDateChooser;
 
 public class MenuCliente {
 
@@ -115,11 +118,28 @@ public class MenuCliente {
         Profesional profesionalElegido = profesionales.get(numProf - 1);
 
         // 3. Elegir fecha
-        String fecha = JOptionPane.showInputDialog("Ingresá la fecha (AAAA-MM-DD):");
-        if (fecha == null || fecha.trim().isEmpty()) return;
+        JDateChooser dateChooser = new JDateChooser();
+        dateChooser.setDateFormatString("yyyy-MM-dd");
 
-        if (!Validador.esFechaFutura(fecha.trim())) {
-            JOptionPane.showMessageDialog(null, "La fecha debe ser hoy o en el futuro. Formato: AAAA-MM-DD.");
+        JPanel panelFecha = new JPanel();
+        panelFecha.add(dateChooser);
+
+        int resultadoFecha = JOptionPane.showConfirmDialog(
+                null,
+                panelFecha,
+                "Seleccioná la fecha del turno",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+
+        if (resultadoFecha != JOptionPane.OK_OPTION || dateChooser.getDate() == null) {
+            return;
+        }
+
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+        String fecha = formato.format(dateChooser.getDate());
+
+        if (!Validador.esFechaFutura(fecha)) {
+            JOptionPane.showMessageDialog(null, "La fecha debe ser hoy o en el futuro.");
             return;
         }
 
