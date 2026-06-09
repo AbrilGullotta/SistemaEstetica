@@ -130,54 +130,13 @@ public class MenuAdministrador extends JFrame{
 
          
 
-private void registrarCliente() {
+	private void registrarCliente() {
 
-    String nombre = Validador.pedirCampoObligatorio("Nombre");
-    if (nombre == null) return;
+	    VentanaRegistrarClienteAdmin ventana =
+	            new VentanaRegistrarClienteAdmin();
 
-    String apellido = Validador.pedirCampoObligatorio("Apellido");
-    if (apellido == null) return;
-
-    String dni = JOptionPane.showInputDialog("DNI:");
-    if (!Validador.esDniValido(dni)) {
-        JOptionPane.showMessageDialog(null, "DNI inválido. Debe tener 7 u 8 dígitos.");
-        return;
-    }
-
-    String email = JOptionPane.showInputDialog("Email:");
-    if (!Validador.esEmailValido(email)) {
-        JOptionPane.showMessageDialog(null, "Email inválido.");
-        return;
-    }
-
-    String telefono = JOptionPane.showInputDialog("Teléfono:");
-    if (!Validador.esTelefonoValido(telefono)) {
-        JOptionPane.showMessageDialog(null, "Teléfono inválido. Solo números, entre 8 y 15 dígitos.");
-        return;
-    }
-
-    String pass = JOptionPane.showInputDialog("Contraseña:");
-    if (!Validador.esContraseniaValida(pass)) {
-        JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 8 caracteres, una letra y un número.");
-        return;
-    }
-
-    String fnac = JOptionPane.showInputDialog("Fecha de nacimiento (AAAA-MM-DD):");
-    if (!Validador.esFechaValida(fnac)) {
-        JOptionPane.showMessageDialog(null, "Fecha inválida. Usá el formato AAAA-MM-DD.");
-        return;
-    }
-
-    UsuarioService usuarioService = new UsuarioService();
-    String resultado = usuarioService.registrarCliente(
-            nombre, apellido, dni, email, telefono, pass, fnac);
-
-    if ("OK".equals(resultado)) {
-        JOptionPane.showMessageDialog(null, "Cliente registrado correctamente.");
-    } else {
-        JOptionPane.showMessageDialog(null, resultado);
-    }
-}
+	    ventana.setVisible(true);
+	}
 private void registrarProfesional() {
 
     String nomProf = Validador.pedirCampoObligatorio("Nombre");
@@ -228,18 +187,10 @@ private void registrarProfesional() {
 }
 private void registrarServicio() {
 
-    String nomServ = JOptionPane.showInputDialog("Nombre del servicio:");
-    String precio = JOptionPane.showInputDialog("Precio:");
-    String duracion = JOptionPane.showInputDialog("Duración (HH:MM:SS):");
+    VentanaRegistrarServicioAdmin ventana =
+            new VentanaRegistrarServicioAdmin();
 
-    ServicioService servicioService = new ServicioService();
-    String resServ = servicioService.registrarServicio(nomServ, precio, duracion);
-
-    if ("OK".equals(resServ)) {
-        JOptionPane.showMessageDialog(null, "Servicio registrado correctamente.");
-    } else {
-        JOptionPane.showMessageDialog(null, resServ);
-    }
+    ventana.setVisible(true);
 }
 private void verClientes() {
 
