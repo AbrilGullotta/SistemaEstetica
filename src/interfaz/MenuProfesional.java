@@ -91,14 +91,10 @@ public class MenuProfesional extends JFrame{
             return;
         }
 
-        StringBuilder sb = new StringBuilder("Tu disponibilidad:\n\n");
-        for (Disponibilidad d : lista) {
-            sb.append("Fecha: " + d.getDia() + "\n");
-            sb.append("De " + d.getHoraInicio() + " a " + d.getHoraFin() + "\n");
-            sb.append("-----------------------------\n");
-        }
+        VentanaDisponibilidadProfesional ventana =
+                new VentanaDisponibilidadProfesional(lista);
 
-        JOptionPane.showMessageDialog(null, sb.toString());
+        ventana.setVisible(true);
     }
 
     private void consultarTurnos() {
