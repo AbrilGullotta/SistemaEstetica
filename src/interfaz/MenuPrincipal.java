@@ -1,49 +1,83 @@
 package interfaz;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
 import modelo.Usuario;
 import servicio.UsuarioService;
 import util.Validador;
 
-public class MenuPrincipal {
+public class MenuPrincipal extends JFrame {
 
     private UsuarioService usuarioService = new UsuarioService();
 
-    public void mostrarMenuPrincipal() {
-        int opcion;
+    private JLabel lblTitulo;
+    private JLabel lblEmail;
+    private JLabel lblContrasenia;
 
-        do {
-            String inputOpcion = JOptionPane.showInputDialog(
-                    " SISTEMA ESTÉTICA \n"
-                    + "1. Iniciar sesión\n"
-                    + "2. Registrarse\n"
-                    + "0. Salir"
-            );
-            if (inputOpcion == null) break;
-            opcion = Integer.parseInt(inputOpcion);
+    private JTextField txtEmail;
+    private JPasswordField txtContrasenia;
 
-            switch (opcion) {
-                case 1:
-                    login();
-                    break;
-                case 2:
-                    registrarCliente();
-                    break;
-                case 0:
-                    JOptionPane.showMessageDialog(null, "¡Hasta pronto!");
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(null, "Opción inválida");
-            }
+    private JButton btnLogin;
+    private JButton btnRegistro;
+    private JButton btnSalir;
 
-        } while (opcion != 0);
+    public MenuPrincipal() {
+        setTitle("Sistema Estética");
+        setLayout(null);
+        setBounds(400, 150, 400, 330);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        lblTitulo = new JLabel("SISTEMA ESTÉTICA");
+        lblTitulo.setBounds(130, 20, 200, 30);
+        add(lblTitulo);
+
+        lblEmail = new JLabel("Email:");
+        lblEmail.setBounds(50, 80, 100, 25);
+        add(lblEmail);
+
+        txtEmail = new JTextField();
+        txtEmail.setBounds(150, 80, 180, 25);
+        add(txtEmail);
+
+        lblContrasenia = new JLabel("Contraseña:");
+        lblContrasenia.setBounds(50, 120, 100, 25);
+        add(lblContrasenia);
+
+        txtContrasenia = new JPasswordField();
+        txtContrasenia.setBounds(150, 120, 180, 25);
+        add(txtContrasenia);
+
+        btnLogin = new JButton("Iniciar sesión");
+        btnLogin.setBounds(120, 165, 150, 30);
+        add(btnLogin);
+
+        btnRegistro = new JButton("Registrarse");
+        btnRegistro.setBounds(120, 205, 150, 30);
+        add(btnRegistro);
+
+        btnSalir = new JButton("Salir");
+        btnSalir.setBounds(120, 245, 150, 30);
+        add(btnSalir);
+
+        btnLogin.addActionListener(e -> login());
+        btnRegistro.addActionListener(e -> registrarCliente());
+        btnSalir.addActionListener(e -> System.exit(0));
     }
 
     private void login() {
-        String email      = JOptionPane.showInputDialog("Email:");
-        if (email == null) return;
-        String contrasenia = JOptionPane.showInputDialog("Contraseña:");
-        if (contrasenia == null) return;
+        String email = txtEmail.getText();
+        String contrasenia = new String(txtContrasenia.getPassword());
+
+        if (email.trim().isEmpty() || contrasenia.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Completá email y contraseña.");
+            return;
+        }
 
         Usuario usuario = usuarioService.iniciarSesion(email, contrasenia);
 
@@ -53,6 +87,8 @@ public class MenuPrincipal {
         }
 
         JOptionPane.showMessageDialog(null, "Bienvenido/a, " + usuario.getNombre() + "!");
+
+        this.dispose();
 
         switch (usuario.getRol()) {
             case "ADMIN":
