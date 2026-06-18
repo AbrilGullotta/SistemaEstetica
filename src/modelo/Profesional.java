@@ -9,4 +9,6 @@ public class Profesional extends Usuario {
     public String toString() {
         return nombre + " " + apellido + " - " + especialidad;
     }
+    
+    
 }

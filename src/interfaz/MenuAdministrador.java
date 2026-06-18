@@ -29,6 +29,7 @@ public class MenuAdministrador extends JFrame{
 	private JButton btnModificarCliente;
 	private JButton btnModificarTurno;
 	private JButton btnModificarServicio;
+	private JButton btnRegistrarTurno;
 	private JButton btnCerrar;
 
 	public MenuAdministrador() {
@@ -98,6 +99,10 @@ public class MenuAdministrador extends JFrame{
 	    btnModificarServicio = new JButton("Modificar servicio");
 	    btnModificarServicio.setBounds(60, 370, 180, 30);
 	    add(btnModificarServicio);
+	    
+	    btnRegistrarTurno = new JButton("Registrar turno");
+	    btnRegistrarTurno.setBounds(260, 370, 180, 30);
+	    add(btnRegistrarTurno);
 
 	    btnCerrar = new JButton("Cerrar sesión");
 	    btnCerrar.setBounds(160, 460, 180, 30);
@@ -116,7 +121,7 @@ public class MenuAdministrador extends JFrame{
 	    btnModificarCliente.addActionListener(e -> modificarCliente());
 	    btnModificarTurno.addActionListener(e -> modificarTurno());
 	    btnModificarServicio.addActionListener(e -> modificarServicio());
-
+	    btnRegistrarTurno.addActionListener(e -> registrarTurno());
 	    btnCerrar.addActionListener(e -> {
 	        dispose();
 	        MenuPrincipal menu = new MenuPrincipal();
@@ -351,6 +356,10 @@ private void modificarServicio() {
     VentanaModificarServicioAdmin ventana =
             new VentanaModificarServicioAdmin(servicios);
 
+    ventana.setVisible(true);
+}
+private void registrarTurno() {
+    VentanaRegistrarTurnoAdmin ventana = new VentanaRegistrarTurnoAdmin();
     ventana.setVisible(true);
 }
 }
